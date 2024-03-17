@@ -40,11 +40,8 @@
       margin: 10px;
       
     }
-
-    button {
-      margin: 30px;
-      width: 75%;
-      background-color: #04AA6D; 
+    
+    button{
       border: none;
       color: white;
       padding: 16px 32px;
@@ -57,7 +54,10 @@
       background-color:#FFE4E1; 
       color: black; 
       border: 2px solid black;
-      margin-left: 14%; 
+      margin-left: 155px; 
+      margin-top: 30px; 
+      margin-bottom: 30px; 
+      width: 32%;
       
     }
     .button:hover {
@@ -77,19 +77,27 @@
     <div class="content">
 
       <h3> Choose the action you want to perform</h3>
-      
-      <div class= button-type1>
-         <button class=" button button1">Add product in a vending machine</button>
-      </div>
-      <div class= button-type1>
-        <button class="button button1">Delete product from a vending machine</button>
+
+
+      <a href="/add">
+        <button class=" button button1"> Add product</button>
+
+      </a>
+
+      <a href="/delete">
+        <button class="button button1"> Delete product </button>
+      </a>
+
+      <a href="/edit">
+        <button class="button button1">Edit product </button>
         </div>
-      <div class= button-type1>
-        <button class="button button1">Edit product from a vending machine</button>
-      </div>
-      <div class= button-type1>
-        <button class="button button1">Display information from a vending machine</button>
-      </div>
+      </a>
+
+      <a href="/info">
+        <button class="button button1">Information</button>
+      </a>
+      
+    
 
     </div>	
   </div>
