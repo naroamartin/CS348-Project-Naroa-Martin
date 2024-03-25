@@ -14,13 +14,21 @@
       min-height: 100vh;
 
     }
-    .wrapper{
+    .wrapper1{
       position: relative; 
-      width: 500px; 
+      width: 100%; 
       height: 500px;
       background: #FFB6C1; 
-      border-radius:20px
-
+      border-radius:20px;
+      margin: 10px;
+    }
+    .wrapper2{
+      position: relative; 
+      width: 100%; 
+      height: 500px;
+      background: #FFB6C1; 
+      border-radius:20px;
+      margin: 10px;
     }
 
     .wrapper h1{
@@ -40,7 +48,7 @@
 
     }
 
-    button {
+    .button {
       margin: 30px;
       width: 75%;
       background-color: #04AA6D; 
@@ -48,7 +56,6 @@
       color: white;
       padding: 16px 32px;
       text-align: center;
-      display: flex;
       font-size: 16px;
       transition-duration: 0.4s;
       cursor:pointer;
@@ -68,12 +75,99 @@
 </head>
 
 <body>
-  <div class="wrapper">
-    <div class="header"> 
-      <h1>addn product </h1>
+   <!-- Add VM -->
+  <div class="container text-center">
+    <div class="row">
+      <div class="col-md-6">
+        <div class="wrapper1">
+          <div class="header"> 
+            <h1>Add Vending Machine</h1>
+          </div>
+
+          <div class= "content">
+             <!-- Select vending Machine  -->
+            <div class= "mx-4 mt-4">
+              <div id="add-store">
+                <form action="/add_store" method="post">
+                 
+                    <!-- Type dropdown -->
+                    <p>Select a Vending Machine Type</p>
+                    <select id="machine_type" name="machine_type" class="form-select mb-1" aria-label="Default select example">
+                        <option value="Food">Food</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Drink">Drink</option>
+                        <option value="Snack">Snack</option>
+                    </select>
+                  
+                  <!-- MaxCapacity num -->
+                  <p> Maximum capacity</p>
+                  <input type="number" id="MaxCapacity" name="MaxCapacity" placeholder="Enter a number" class="form-control mb-1" aria-label="default input example">
+
+                    <!-- Status dropdown -->
+                  <p>Status of the Machine: 1-Working, 0-Not Working </p>
+                  
+                    <select id="status" name="status"class="form-select mb-1" aria-label="Default select example">
+                        <option value="Working">Working</option>
+                        <option value="Not Working">Not Working</option>
+                    </select>
+
+                  <p>Store in which it will be placed</p>
+                  <input type="text" id="store_name" name="store_name" placeholder="Enter a store name" class="form-control mb-1" aria-label="default input example">
+
+                    <button class= "button button1" type="submit">Upload</button>
+                </form>
+              </div>
+            </div>
+
+        </div>
+      </div>
     </div>
-	
+      <!-- Add product -->
+      <div class="col-md-6">
+        <div class="wrapper1">
+          <div class="header"> 
+            <h1>Add Vending Machine</h1>
+          </div>
+
+          <div class= "content">
+             <!-- Select vending Machine  -->
+            <div class= "mx-4 mt-4">
+              <div id="add-store">
+                <form action="/add_store" method="post">
+
+                    <!-- Type dropdown -->
+                    <p>Select a Vending Machine Type</p>
+                    <select id="machine_type" name="machine_type" class="form-select mb-1" aria-label="Default select example">
+                        <option value="Food">Food</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Drink">Drink</option>
+                        <option value="Snack">Snack</option>
+                    </select>
+
+                  <!-- MaxCapacity num -->
+                  <p> Maximum capacity</p>
+                  <input type="number" id="MaxCapacity" name="MaxCapacity" placeholder="Enter a number" class="form-control mb-1" aria-label="default input example">
+
+                    <!-- Status dropdown -->
+                  <p>Status of the Machine: 1-Working, 0-Not Working </p>
+
+                    <select id="status" name="status"class="form-select mb-1" aria-label="Default select example">
+                        <option value="Working">Working</option>
+                        <option value="Not Working">Not Working</option>
+                    </select>
+
+                  <p>Store in which it will be placed</p>
+                  <input type="text" id="store_name" name="store_name" placeholder="Enter a store name" class="form-control mb-1" aria-label="default input example">
+
+                    <button class= "button button1" type="submit">Upload</button>
+                </form>
+              </div>
+            </div>
+
+        </div>
+      </div>
+    </div>
+
   </div>
 </body>
 </html>
-

@@ -22,7 +22,7 @@ def upload_product(product_name, product_price, expiration_date, product_quantit
   except Exception as e:
       # Handle other exceptions
       return f"Error: {str(e)}"
-    
+
 def load_vending_machines():
   try:
       with engine.begin() as conn:
