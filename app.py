@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 
-from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number
+from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product
 
 
 
@@ -75,6 +75,33 @@ def add_product():
     elif machine_type not in vect: 
       return 'The machine does not exist or there is not that type of machine in that store'
 
+@app.route("/delete_product", methods=['POST'])
+def delete_product():
+  
+  machine_type = request.form['machine_type']
+  store_name =request.form['store_name']
+  product_name =request.form['product_name']
+
+  vect=get_product_types(store_name, machine_type)
+
+  if product_name in vect: 
+    product_id=get_product_id(product_name,store_name ,machine_type)
+    machine_id=get_machine_id(machine_type, store_name)
+    
+    if product_id is not None:
+      items_product= get_product_number(product_name,store_name ,machine_type)
+      items=get_MaxCapacity_NumItems(machine_id)
+      num_items_vm=items[1]
+      total_items= num_items_vm- items_product
+      mod_product_number(total_items, machine_id)
+      
+      remove_product(product_id)
+      return 'Product removed successfully'
+      
+    elif product_ is None: 
+      return 'Product does not exist'
+  elif product_name not in vect:
+      return 'Product not in the Vending Machine'
 
 @app.route('/delete')
 def delete():
