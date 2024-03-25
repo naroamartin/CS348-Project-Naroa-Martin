@@ -96,7 +96,7 @@
                         <option value="Food">Food</option>
                         <option value="Coffee">Coffee</option>
                         <option value="Drink">Drink</option>
-                        <option value="Snack">Snack</option>
+                        <option value="Snacks">Snack</option>
                     </select>
                   
                   <!-- MaxCapacity num -->
@@ -132,8 +132,8 @@
           <div class= "content">
              <!-- Select vending Machine  -->
             <div class= "mx-4 mt-4">
-              <div id="add-store">
-                <form action="/add_store" method="post">
+              <div id="add-product">
+                <form action="/add_product" method="post">
 
                     <!-- Type dropdown -->
                     <p>Select a Vending Machine Type</p>
@@ -141,25 +141,42 @@
                         <option value="Food">Food</option>
                         <option value="Coffee">Coffee</option>
                         <option value="Drink">Drink</option>
-                        <option value="Snack">Snack</option>
+                        <option value="Snacks">Snacks</option>
                     </select>
 
-                  <!-- MaxCapacity num -->
-                  <p> Maximum capacity</p>
-                  <input type="number" id="MaxCapacity" name="MaxCapacity" placeholder="Enter a number" class="form-control mb-1" aria-label="default input example">
+                    <!-- Name Store  -->
+                     <p>Store in which it will be placed</p>
+                     <input type="text" id="store_name" name="store_name" placeholder="Enter a store name" class="form-control mb-1" aria-label="default input example">
+                  
+                    <div class="row">
+                      <div class="col">
+                        <!-- Name product  -->
+                        <p> Name of product</p>
+                        <input type="text" id="product_name" name="product_name" placeholder="Enter a number" class="form-control mb-1" aria-label="default input example">
+                      </div>
+                      <div class="col">
+                        <!-- Price product  -->
+                        <p> Price</p>
+                        <input type="text"  id="product_price" name="product_price" placeholder="Enter a number" class="form-control mb-1" aria-label="default input example">
+                       
+                      </div>
+                    </div>
 
-                    <!-- Status dropdown -->
-                  <p>Status of the Machine: 1-Working, 0-Not Working </p>
+                  <div class="row">
+                    <div class="col">
+                      <!-- Expiration Date of product  -->
+                      <p>Expiration date</p>
+                      <input type="date" id="expiration_date" name="expiration_date" placeholder="Enter a number" class="form-control mb-1" aria-label="default input example">
+                    </div>
+                    <div class="col">
+                      <!-- Quantity of product  -->
+                      <p>Quantity</p>
+                      <input type="number" id="quantity" name="quantity" placeholder="Enter a number" class="form-control mb-1" aria-label="default input example">
 
-                    <select id="status" name="status"class="form-select mb-1" aria-label="Default select example">
-                        <option value="Working">Working</option>
-                        <option value="Not Working">Not Working</option>
-                    </select>
-
-                  <p>Store in which it will be placed</p>
-                  <input type="text" id="store_name" name="store_name" placeholder="Enter a store name" class="form-control mb-1" aria-label="default input example">
-
-                    <button class= "button button1" type="submit">Upload</button>
+                    </div>
+                  </div>
+                  
+                  <button class= "button button1" type="submit">Upload</button>
                 </form>
               </div>
             </div>

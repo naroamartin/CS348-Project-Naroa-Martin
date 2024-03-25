@@ -6,6 +6,7 @@ engine = create_engine("mysql+pymysql://naroamartin:ZsQzfMRSjCc9j5G08exZ@cs348db
 
 Session = sessionmaker(bind=engine)
 
+#UPLOAD A NEW PRODUCT
 def upload_product(product_name, product_price, expiration_date, product_quantity, product_machineID):
   try:
       with Session() as session:
@@ -23,6 +24,7 @@ def upload_product(product_name, product_price, expiration_date, product_quantit
       # Handle other exceptions
       return f"Error: {str(e)}"
     
+    
 def load_vending_machines():
   try:
       with engine.begin() as conn:
@@ -35,65 +37,27 @@ def load_vending_machines():
       return f"Error: {str(e)}"
 
 
-#FOR GETTING CITY NAMES WHEN THE TYPE IS SELECTED
-def get_city(machine_type):
-  with Session() as session:
-      query = text("""
-        SELECT DISTINCT(Store.City)
-        FROM Store 
-        JOIN VendingMachine ON Store.NameStore = VendingMachine.NameStore
-        WHERE VendingMachine.MachineType =:machine_type;
-      """)
-
-      result = session.execute(query, {"machine_type": machine_type})
-      machine_types = result.fetchall()
-
-      if machine_types:
-          return [row[0] for row in machine_types]  # Return a list of machine IDs
-      else:
-          return None
-
-
-#FOR GETTING STORE NAMES WHEN THE TYPE AND THE CITY ARE SELECTED
-def get_store(machine_type, city):
-  with Session() as session:
-      query = text("""
-          SELECT DISTINCT(Store.NameStore)
-          FROM Store 
-          JOIN VendingMachine ON Store.NameStore = VendingMachine.NameStore
-          WHERE VendingMachine.MachineType = :machine_type
-          AND Store.City = :city
-      """)
-
-      result = session.execute(query, {"machine_type": machine_type, "city": city})
-      store_names = result.fetchall()
-
-      if store_names:
-          return [row[0] for row in store_names]  # Return a list of store_names
-      else:
-          return None
-
 #FOR GETTING A MACHINE ID 
-def get_machine_id(machine_type, city, store_name):
+def get_machine_id(machine_type, store_name):
     with Session() as session:
         query = text("""
             SELECT VendingMachine.id
             FROM VendingMachine 
             JOIN Store ON Store.NameStore = VendingMachine.NameStore
             WHERE VendingMachine.MachineType = :machine_type
-            AND Store.City = :city
-            AND Store.NameStore = :store_name
+            AND Store.NameStore =:store_name
         """)
 
-        result = session.execute(query, {"machine_type": machine_type, "city": city, "store_name": store_name})
+        result = session.execute(query, {"machine_type": machine_type,"store_name": store_name})
         machine_ids = result.fetchall()
 
         if machine_ids:
-            return [row[0] for row in machine_ids]  # Return a list of machine IDs
+          return machine_ids[0][0]
         else:
-            return None
+          return None
 
 
+#ADDING A NEW VENING MATCHINE IN THE DATABASE
 def upload_Vending_Machine(vm_type, vm_maxcapacity, vm_working, vm_numitems, vm_namestore):
   try:
       with Session() as session:
@@ -124,6 +88,7 @@ def mod_store_vm_number(num_items, store_name):
           # Handle the exception, e.g., log the error
           print("Error:", e)
 
+#GETTING THE nUMBER OF MATCHINES IN A GIVEN STORE
 def get_number_of_machines(store_name):
   with Session() as session:
       try:
@@ -139,3 +104,66 @@ def get_number_of_machines(store_name):
           print("Error:", e)
           return None
 
+#GETTING THE MACHINE TYPES IN A GIVEN STORE
+def get_machine_types(store_name):
+  with Session() as session:
+      try:
+          query = text("SELECT VendingMachine.MachineType FROM VendingMachine WHERE VendingMachine.NameStore=:store_name;")
+          result = session.execute(query, {"store_name": store_name})
+          machine_type = result.fetchall()
+          if  machine_type:
+            return [row[0] for row in  machine_type]
+              
+      except Exception as e:
+          # Handle the exception
+          print("Error:", e)
+          return None
+        
+def get_product_types(store_name,machine_type):
+  with Session() as session:
+      try:
+          query = text("SELECT Product.NameProduct FROM Product JOIN VendingMachine ON  VendingMachine.ID= Product.MachineID  WHERE VendingMachine.NameStore= :store_name AND VendingMachine.MachineType= :machine_type;")
+          result = session.execute(query, {"store_name": store_name,"machine_type": machine_type})
+          product_type = result.fetchall()
+          if  product_type:
+            return [row[0] for row in product_type]
+          else: 
+            return []
+
+      except Exception as e:
+          # Handle the exception
+          print("Error:", e)
+          return None
+
+def get_MaxCapacity_NumItems(machine_id):
+  with Session() as session:
+      try:
+          query = text("SELECT VendingMachine.MaxCapacity, VendingMachine.NumItems FROM VendingMachine WHERE VendingMachine.ID=:machine_id;")
+          result = session.execute(query, {"machine_id": machine_id})
+          capacity = result.fetchone()  # Fetch one row as we expect one result
+          if capacity:
+              return capacity
+          else:
+              # You could return a default value like -1
+              return -1
+      except Exception as e:
+          # Handle the exception
+          print("Error:", e)
+          # You could also raise an exception here instead of returning a default value
+          return -1
+
+
+def mod_product_number(num_items, machine_id):
+  with Session() as session:
+      try:
+          session.execute(
+              text("UPDATE VendingMachine SET VendingMachine.NumItems=:num_items WHERE VendingMachine.ID = :machine_id"),
+              {"num_items": num_items, "machine_id": machine_id}
+          )
+          session.commit()
+      except Exception as e:
+          session.rollback()
+          # Handle the exception, e.g., log the error
+          print("Error:", e)
+
+mod_product_number(65,2)

@@ -138,4 +138,3 @@ def get_number_of_machines(store_name):
           # Handle the exception
           print("Error:", e)
           return None
-
