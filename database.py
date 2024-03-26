@@ -262,13 +262,98 @@ def get_product_number(product_name, store_name, machine_type):
     else:
       return None
       
-
 def remove_product(product_id): # ORM
   with Session.begin() as session:
       session.execute(text("DELETE FROM Product WHERE Product.ID = :id"), {"id": product_id})
       session.commit()
 
+def delete_vending_machine(store_name,machine_type): # ORM
+  with Session.begin() as session:
+    machine_id= get_machine_id(machine_type, store_name)
+    if machine_id:
+      # Delete the products of the store
+      session.execute(text("DELETE FROM Product WHERE Product.MachineID = :id"), {"id": machine_id})
+      # Delete the Vening Machine
+      session.execute(text("DELETE FROM VendingMachine WHERE VendingMachine.ID = :id"), {"id": machine_id})
 
 
-vec= get_product_types('Rockade', 'Coffee')
-print(vec)
+
+
+
+def update_veding_machine(store_name, machine_type,max_capacity,working):
+  with Session.begin() as session:
+    # Prepare the SQL UPDATE statement
+    update_statement = """
+      UPDATE VendingMachine
+      SET MaxCapacity = :max_capacity, Working = :working
+      WHERE VendingMachine.NameStore = :store_name AND  VendingMachine.MachineType= :machine_type
+      """
+
+    # Execute the SQL statement with provided parameters
+    session.execute(
+        text(update_statement),{"store_name":store_name,"machine_type": machine_type,"max_capacity":max_capacity,"working":working})
+
+    session.commit()
+
+
+def update_product(store_name, product_name, machine_type, price, expiration_date, quantity):
+  with Session.begin() as session:
+    machine_id = get_machine_id(machine_type, store_name)
+    # Prepare the SQL UPDATE statement
+    update_statement = """
+        UPDATE Product
+        SET Price = :price, ExpirationDate = :expiration_date, Quantity = :quantity
+        WHERE Product.NameProduct = :product_name AND Product.MachineID = :machine_id
+    """
+
+    # Execute the SQL statement with provided parameters
+    session.execute(
+        text(update_statement),
+        {
+            "product_name": product_name,
+            "machine_id": machine_id,  # Corrected from machine_type
+            "price": price,
+            "expiration_date": expiration_date,
+            "quantity": quantity
+        }
+    )
+
+    session.commit()
+
+
+def get_quantity(product_name, machine_id):
+  with Session() as session:
+      try:
+          query = text(
+              "SELECT Product.Quantity FROM Product WHERE Product.MachineID = :machine_id AND Product.NameProduct = :product_name;"
+          )
+          result = session.execute(query, {"machine_id": machine_id, "product_name": product_name})
+          quantity = result.fetchone()  # Fetch one row as we expect one result
+          if quantity:
+              return quantity[0]  # Return the quantity value from the fetched row
+          else:
+              # Return a default value like -1 if no quantity is found
+              return -1
+      except Exception as e:
+          # Handle the exception
+          print("Error:", e)
+          # Return a default value like -1 in case of any exception
+          return -1
+
+def get_products(store_name,machine_type):
+  with Session.begin() as session:
+    
+      products_query = text("""
+          SELECT Product.NameProduct, Product.Price , Product.ExpirationDate 
+          FROM Product
+          JOIN VendingMachine ON VendingMachine.ID = Product.MachineID
+          WHERE VendingMachine.NameStore=:store_name AND VendingMachine.MachineType =:machine_type;
+      """)
+
+      result = session.execute(products_query, {"store_name": store_name, "machine_type": machine_type}).fetchall()
+      # Extract titles from the result
+      products = [row[0] for row in result]
+      price= [row[1] for row in result]
+      date= [row[2] for row in result]
+      return products,price,date
+

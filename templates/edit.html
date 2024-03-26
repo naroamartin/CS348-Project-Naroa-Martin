@@ -12,24 +12,26 @@
       justify-content:center;
       align-items: center;
       min-height: 100vh;
-
     }
-    .wrapper{
+    .wrapper {
       position: relative; 
-      width: 500px; 
+      width: 100%; 
       height: 500px;
-      background: #FFB6C1; 
-      border-radius:20px
-
+      border-radius: 20px;
+      margin: 10px;
     }
-
+    .wrapper1{
+      background: #E6E6FA; 
+    }
+    .wrapper2{
+      background: #fed2e1; 
+    }
+  
     .wrapper h1{
       font-size: 36px; 
       text-align: center;
-      text-decoration: blond; 
       color: #C71585;
       margin: 10px; 
-
     }
     .wrapper h3{
       font-size: 20px; 
@@ -37,10 +39,9 @@
       color: #C71585;
       text-align: center; 
       margin: 10px;
-
     }
 
-    button {
+    .button {
       margin: 30px;
       width: 75%;
       background-color: #04AA6D; 
@@ -48,7 +49,6 @@
       color: white;
       padding: 16px 32px;
       text-align: center;
-      display: flex;
       font-size: 16px;
       transition-duration: 0.4s;
       cursor:pointer;
@@ -57,23 +57,163 @@
       color: black; 
       border: 2px solid black;
       margin-left: 14%; 
-
     }
     .button:hover {
       background-color: grey;
       color: white;
     }
-
   </style>
 </head>
 
 <body>
-  <div class="wrapper">
-    <div class="header"> 
-      <h1>edit product</h1>
-    </div>
+   <!-- Edit a Store-->
+  <div class="container text-center">
+    <div class="row">
+      <!-- First Column -->
+      <div class="col-md-6">
+        <div class="wrapper wrapper1">
+          <div class="header"> 
+            <h1>Edit Vending Machine</h1>
+          </div>
 
+          <div class= "content">
+            <div class= "mx-4 mt-4">
+              <div id="edit-vm">
+                <form method="post" action="/edit_vm">
+                  
+                      
+                          <div class="mb-1">
+                              <label for="store_name" class="form-label">Store Name</label>
+                              <input type="text" class="form-control" id="store_name" name="store_name" placeholder="Enter a Name ">
+                          </div>
+                      
+                      
+                          <p>Select Type</p>
+                          <div class="mb-5">
+                                <select id="machine_type" name="machine_type" class="form-select mb-1" aria-label="Default select example">
+                                    <option value="Food">Food</option>
+                                    <option value="Coffee">Coffee</option>
+                                    <option value="Drink">Drink</option>
+                                    <option value="Snacks">Snack</option>
+                                </select> 
+                          </div>
+                      
+                  
+                  <!-- Editable fields -->
+                  <div class="row g-1 m-2">
+                      <div class="col-md">
+                          <div class="mb-5">
+                            <input type="checkbox" id="MaxCapacity" onclick="toggleInput('MaxCapacity', 'maxcapacity')"> Maximum Capacity
+                            <input type="number" id="maxcapacity" name="maxcapacity" style="display:none;" placeholder="MaxCapacity">
+                          </div>
+                      </div>
+                      <div class="col-md">
+                          <div class="mb-1">
+                            <input type="checkbox" id="WorkingCheckbox" onclick="toggleInput('WorkingCheckbox', 'working')"> Working (0 for no, 1 for yes)
+                            <input type="number" id="working" name="working" style="display:none;" placeholder="0 or 1">
+                          </div>
+                      </div>
+                  </div>
+
+
+                  <button class=" button" type="submit">Edit</button>
+
+                </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Second Column -->
+      <div class="col-md-6">
+        <div class="wrapper wrapper2">
+          <div class="header"> 
+            <h1>Edit Product</h1>
+          </div>
+
+          <div class= "content">
+            <div class= "mx-4 ">
+              <div id="edit-product">
+                <form method="post" action="/edit_product">
+                  <div class="row g-2">
+                      <div class="col-md">
+                        <div class="mb-1">
+                            <label for="store_name" class="form-label">Store Name</label>
+                            <input type="text" class="form-control" id="store_name" name="store_name" placeholder="Enter a Name ">
+                        </div>
+                         
+                      </div>
+                      <div class="col-md">
+
+                        <div class="mb-1">
+                            <label for="product_name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="product_name" name="product_name" placeholder="Enter a Name ">
+                        </div>
+                         
+                      </div>
+                  </div>
+                  
+                  
+                    <p>Select Type</p>
+                    <div class="mb-1">
+                          <select id="machine_type" name="machine_type" class="form-select mb-1" aria-label="Default select example">
+                              <option value="Food">Food</option>
+                              <option value="Coffee">Coffee</option>
+                              <option value="Drink">Drink</option>
+                              <option value="Snacks">Snack</option>
+                          </select> 
+                    </div>
+                  
+                  <!-- Editable fields -->
+                  <div class="row g-2 m-4">
+                      <div class="col-md">
+                          <div class="mb-1">
+                            <input type="checkbox" id="Price" onclick="toggleInput('Price', 'price')"> Price
+                            <input type="text" id="price" name="price" style="display:none;" placeholder=price>
+                          </div>
+                      </div>
+                      <div class="col-md">
+                          <div class="mb-1">
+                            <input type="checkbox" id="Date" onclick="toggleInput('Date', 'expiration_date')"> ExpirationDate
+                            <input type="date" id="expiration_date" name="expiration_date" style="display:none;" placeholder="expiration_Date">
+                          </div>
+                      </div>
+                  </div>
+
+                    <div class="col-md">
+                      <div class="mb-1">
+                        <input type="checkbox" id="Quantity" onclick="toggleInput('Quantity', 'quantity')"> Quantity
+                        <input type="number" id="quantity" name="quantity" style="display:none;" placeholder="Quantity">
+                      </div>
+                    </div>
+
+                    <button class="button" type="submit">Edit</button>
+
+                  </form>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
   </div>
 </body>
+
+<script>
+function toggleInput(checkboxId, inputId) {
+    var checkbox = document.getElementById(checkboxId);
+    var input = document.getElementById(inputId);
+    if (checkbox.checked) {
+        input.style.display = 'block';
+    } else {
+        input.style.display = 'none';
+    }
+}
+</script>
 </html>
+
+
+
 

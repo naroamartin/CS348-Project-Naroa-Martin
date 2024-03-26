@@ -63,17 +63,90 @@
       background-color: grey;
       color: white;
     }
+    .color{
+      color:#FFB6C1;
+    }
 
   </style>
 </head>
-
 <body>
-  <div class="wrapper">
-    <div class="header"> 
-      <h1>Information</h1>
-    </div>
+   <!-- Edit a Store-->
+  <div class="container text-center">
+    <div class="row">
+      <!-- First Column -->
+      <div class="col-md-6">
+        <div class="wrapper wrapper1">
+          <div class="header"> 
+            <h1>Search a Given Product</h1>
+          </div>
 
+          <div class= "content">
+            <form method="post" action="/show_products">
+              <div class="row g-2 m-4">
+
+
+                <label for="store_name" class="form-label">Store Name</label>
+                <input type="text" class="form-control" id="store_name" name="store_name" placeholder="Enter a Name ">
+
+
+
+                <p>Select Type</p>
+
+                    <select id="machine_type" name="machine_type" class="form-select mb-1" aria-label="Default select example">
+                        <option value="Food">Food</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Drink">Drink</option>
+                        <option value="Snacks">Snack</option>
+                    </select> 
+
+
+                <div class="col-md">
+                  <button class=" button" type="submit">Find</button>
+                </div>
+
+            </form>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  
+
+      <!-- Second Column -->
+      <div class="col-md-6">
+          <div class="wrapper wrapper2">
+              <div class="header"> 
+                  <h1>Edit Product</h1>
+              </div>
+
+              <div class="content">
+                  <div class="product-list ">
+                      <h3>Shown Products</h3>
+                      {% if products %}
+                          <ul class="list-group ">
+                              {% for i in range(products|length) %}
+                                  <li class="list-group-item m-2 color ">
+                                      <div class="row">
+                                          <div class="col">{{ products[i] }}</div>
+                                          <div class="col">Price: {{ price[i] }}</div>
+                                          <div class="col">Date: {{ date[i] }}</div>
+                                      </div>
+                                  </li>
+                              {% endfor %}
+                          </ul>
+                      {% else %}
+                          <p>There are no products available for the given criteria.</p>
+                      {% endif %}
+                  </div>
+              </div>
+          </div>
+      </div>
+
+
+            
+        </div>
+      </div>
+
+    </div>
   </div>
 </body>
-</html>
-

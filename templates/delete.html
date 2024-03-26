@@ -87,6 +87,24 @@
           <div class= "content">
              <!-- Select vending Machine  -->
             <div class= "mx-4 mt-4">
+              <div id="delete-vending-machine">
+                <form action="/delete_machine" method="post">
+                    <!-- Type dropdown -->
+                    <p>Select a Vending Machine Type</p>
+                    <select id="machine_type" name="machine_type" class="form-select mb-1" aria-label="Default select example">
+                        <option value="Food">Food</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Drink">Drink</option>
+                        <option value="Snacks">Snack</option>
+                    </select>
+
+                  <p>Store</p>
+                  <input type="text" id="store_name" name="store_name" placeholder="Enter a store name" class="form-control mb-1" aria-label="default input example">
+                  
+
+                    <button class= "button button1" type="submit">Upload</button>
+                </form>
+              </div>
               
             </div>
 
