@@ -17,6 +17,7 @@ def add():
 
 
 
+
 @app.route("/add_store", methods=['POST'])
 def add_store():
     machine_type = request.form['machine_type']
@@ -36,9 +37,10 @@ def add_store():
         upload_Vending_Machine(machine_type, MaxCapacity,1,0, store_name)
       if status== "Not Working":
         upload_Vending_Machine(machine_type, MaxCapacity,1,0, store_name)
-      return 'Store added successfully'
+      return render_template("add_message-VM1.html")
     elif machine_type in vect: 
-      return 'The store already has that type of machine'
+      return render_template("add_message-VM2.html")
+
 
 
 
@@ -75,6 +77,8 @@ def add_product():
       
     elif machine_type not in vect: 
        return render_template("add_message4.html")
+
+
 
 
 @app.route("/delete_product", methods=['POST'])
@@ -120,12 +124,9 @@ def delete_machine():
             mod_store_vm_number(number, store_name)
           
         delete_vending_machine(store_name, machine_type)
-        return 'Vending Machine Deleted'
+        return  render_template("delete_message-VM1.html")
     elif machine_type not in vect:
-        return 'The is not such Machine in the Store you selected'
-
-
-
+        return render_template("delete_message-VM2.html")
 
 @app.route("/edit_vm", methods=['POST'])
 def edit_vm():
