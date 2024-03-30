@@ -65,15 +65,16 @@ def add_product():
         if totalcapacity<=capacity[0]:
           upload_product(product_name, product_price, expiration_date, quantity, machine_id)
           mod_product_number(totalcapacity, machine_id)
-          return 'Product added successfully'
+          return render_template("add_message1.html")
          
         elif totalcapacity>capacity[0]:
-          return 'There is not enough space in the machine'
+          return render_template("add_message2.html")
+        
       elif product_name in products:
-        return 'The product already exists'
+         return render_template("add_message3.html")
       
     elif machine_type not in vect: 
-      return 'The machine does not exist or there is not that type of machine in that store'
+       return render_template("add_message4.html")
 
 @app.route("/delete_product", methods=['POST'])
 def delete_product():
@@ -96,12 +97,12 @@ def delete_product():
       mod_product_number(total_items, machine_id)
       
       remove_product(product_id)
-      return 'Product removed successfully'
+      return render_template("delete_message1.html")
       
     elif product_ is None: 
-      return 'Product does not exist'
+      return render_template("delete_message2.html")
   elif product_name not in vect:
-      return 'Product not in the Vending Machine'
+      return render_template("delete_message3.html")
 
 
 
@@ -153,6 +154,7 @@ def edit_product():
 
       products = get_product_types(store_name,machine_type)
       if product_name in products: 
+        
         capacity=get_MaxCapacity_NumItems(machine_id)
         actual_quantity= get_quantity(product_name,machine_id)
         subs= quantity - actual_quantity

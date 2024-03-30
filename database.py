@@ -178,7 +178,7 @@ def get_product_types(store_name, machine_type):
       print("Error:", e)
       return None
 
-#GET THE MAXCAPACITY AND ACTUAL NUMBER OF ITEMS IN A MATCHINE
+#GET THE MAXCAPACITY IN A MATCHINE
 def get_MaxCapacity_NumItems(machine_id):
   with Session() as session:
     try:
@@ -238,6 +238,7 @@ def get_product_id(product_name, store_name, machine_type):
     else:
       return None
 
+#GET THE PRODUCT NUMBER IN A VENDING MACHINE
 def get_product_number(product_name, store_name, machine_type):
   with Session() as session:
     query = text("""
@@ -261,12 +262,15 @@ def get_product_number(product_name, store_name, machine_type):
       return machine_ids[0][0]
     else:
       return None
-      
+
+
+#REMOVE THE PRODUCT NUMBER IN A VENDING MACHINE
 def remove_product(product_id): # ORM
   with Session.begin() as session:
       session.execute(text("DELETE FROM Product WHERE Product.ID = :id"), {"id": product_id})
       session.commit()
 
+#DELETE A VENDING MACHINE
 def delete_vending_machine(store_name,machine_type): # ORM
   with Session.begin() as session:
     machine_id= get_machine_id(machine_type, store_name)
@@ -276,10 +280,7 @@ def delete_vending_machine(store_name,machine_type): # ORM
       # Delete the Vening Machine
       session.execute(text("DELETE FROM VendingMachine WHERE VendingMachine.ID = :id"), {"id": machine_id})
 
-
-
-
-
+#UPDATE A VENDING MACHINE
 def update_veding_machine(store_name, machine_type,max_capacity,working):
   with Session.begin() as session:
     # Prepare the SQL UPDATE statement
@@ -296,6 +297,7 @@ def update_veding_machine(store_name, machine_type,max_capacity,working):
     session.commit()
 
 
+#UPDATE A PRODUCT FROM A VENDING MACHINE
 def update_product(store_name, product_name, machine_type, price, expiration_date, quantity):
   with Session.begin() as session:
     machine_id = get_machine_id(machine_type, store_name)
@@ -340,6 +342,8 @@ def get_quantity(product_name, machine_id):
           # Return a default value like -1 in case of any exception
           return -1
 
+
+#use only for displaying data 
 def get_products(store_name,machine_type):
   with Session.begin() as session:
     
