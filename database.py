@@ -178,7 +178,7 @@ def get_product_types(store_name, machine_type):
       print("Error:", e)
       return None
 
-#GET THE MAXCAPACITY IN A MATCHINE
+#GET THE MAXCAPACITY AND NUMBER ITEMS IN A MATCHINE
 def get_MaxCapacity_NumItems(machine_id):
   with Session() as session:
     try:
@@ -281,20 +281,29 @@ def delete_vending_machine(store_name,machine_type): # ORM
       session.execute(text("DELETE FROM VendingMachine WHERE VendingMachine.ID = :id"), {"id": machine_id})
 
 #UPDATE A VENDING MACHINE
-def update_veding_machine(store_name, machine_type,max_capacity,working):
+def update_veding_machine(store_name, machine_type, max_capacity, working):
   with Session.begin() as session:
-    # Prepare the SQL UPDATE statement
-    update_statement = """
-      UPDATE VendingMachine
-      SET MaxCapacity = :max_capacity, Working = :working
-      WHERE VendingMachine.NameStore = :store_name AND  VendingMachine.MachineType= :machine_type
-      """
+      # Prepare the SQL UPDATE statement
+      update_statement = "UPDATE VendingMachine SET "
+      update = []
 
-    # Execute the SQL statement with provided parameters
-    session.execute(
-        text(update_statement),{"store_name":store_name,"machine_type": machine_type,"max_capacity":max_capacity,"working":working})
+      if max_capacity is not None: 
+          update.append(f"MaxCapacity = :max_capacity")
 
-    session.commit()
+      if working is not None and working.isdigit():
+          update.append(f"Working = :working")
+      
+      update_statement += ", ".join(update)
+      update_statement += " WHERE VendingMachine.MachineType = :machine_type AND VendingMachine.NameStore = :store_name"
+
+      session.execute(
+          text(update_statement),
+          {"store_name": store_name, "machine_type": machine_type, "max_capacity": max_capacity, "working": working}
+      )
+
+      session.commit()
+      
+
 
 
 #UPDATE A PRODUCT FROM A VENDING MACHINE
@@ -361,3 +370,25 @@ def get_products(store_name,machine_type):
       date= [row[2] for row in result]
       return products,price,date
 
+
+def get_price_expiration(store_name,machine_type,product_name):
+  with Session.begin() as session:
+
+      products_query = text("""
+          SELECT Product.Price , Product.ExpirationDate 
+          FROM Product
+          JOIN VendingMachine ON VendingMachine.ID = Product.MachineID
+          WHERE VendingMachine.NameStore=:store_name AND VendingMachine.MachineType =:machine_type AND Product.NameProduct =:product_name;;
+      """)
+
+      result = session.execute(products_query, {"store_name": store_name, "machine_type": machine_type, "product_name": product_name}).fetchall()
+      # Extract titles from the result
+      price= [row[0] for row in result]
+      date= [row[1] for row in result]
+      return price,date
+
+
+
+
+hola= update_veding_machine('Rockade', 'Coffee', 250, None)
+print(hola)
