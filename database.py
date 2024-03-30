@@ -35,47 +35,6 @@ def upload_product(product_name, product_price, expiration_date,
     return f"Error: {str(e)}"
 
 
-def load_vending_machines():
-  try:
-    with engine.begin() as conn:
-      result = text("SELECT * FROM VendingMachine")
-      result = conn.execute(result)
-      vending_machines = [{
-          "id": row[0],
-          "machine_type": row[1],
-          "max_capacity": row[2],
-          "working": row[3],
-          "num_items": row[4],
-          "store_id": row[5]
-      } for row in result]
-      return vending_machines
-
-  except Exception as e:
-    return f"Error: {str(e)}"
-
-
-#FOR GETTING A MACHINE ID
-def get_machine_id(machine_type, store_name):
-  with Session() as session:
-    query = text("""
-            SELECT VendingMachine.id
-            FROM VendingMachine 
-            JOIN Store ON Store.NameStore = VendingMachine.NameStore
-            WHERE VendingMachine.MachineType = :machine_type
-            AND Store.NameStore =:store_name
-        """)
-
-    result = session.execute(query, {
-        "machine_type": machine_type,
-        "store_name": store_name
-    })
-    machine_ids = result.fetchall()
-
-    if machine_ids:
-      return machine_ids[0][0]
-    else:
-      return None
-
 
 #ADDING A NEW VENING MATCHINE IN THE DATABASE
 def upload_Vending_Machine(vm_type, vm_maxcapacity, vm_working, vm_numitems,
@@ -102,6 +61,76 @@ def upload_Vending_Machine(vm_type, vm_maxcapacity, vm_working, vm_numitems,
     # Handle other exceptions
     return f"Error: {str(e)}"
 
+
+#REMOVE THE PRODUCT NUMBER IN A VENDING MACHINE
+def remove_product(product_id): # ORM
+  with Session.begin() as session:
+      session.execute(text("DELETE FROM Product WHERE Product.ID = :id"), {"id": product_id})
+      session.commit()
+
+
+#DELETE A VENDING MACHINE
+def delete_vending_machine(store_name,machine_type): # ORM
+  with Session.begin() as session:
+    machine_id= get_machine_id(machine_type, store_name)
+    if machine_id:
+      # Delete the products of the store
+      session.execute(text("DELETE FROM Product WHERE Product.MachineID = :id"), {"id": machine_id})
+      # Delete the Vening Machine
+      session.execute(text("DELETE FROM VendingMachine WHERE VendingMachine.ID = :id"), {"id": machine_id})
+      
+
+#UPDATE A VENDING MACHINE
+def update_veding_machine(store_name, machine_type, max_capacity, working):
+  with Session.begin() as session:
+      # Prepare the SQL UPDATE statement
+      update_statement = "UPDATE VendingMachine SET "
+      update = []
+
+      if max_capacity is not None: 
+          update.append(f"MaxCapacity = :max_capacity")
+
+      if working is not None and working.isdigit():
+          update.append(f"Working = :working")
+
+      update_statement += ", ".join(update)
+      update_statement += " WHERE VendingMachine.MachineType = :machine_type AND VendingMachine.NameStore = :store_name"
+
+      session.execute(
+          text(update_statement),
+          {"store_name": store_name, "machine_type": machine_type, "max_capacity": max_capacity, "working": working}
+      )
+
+      session.commit()
+
+
+
+#UPDATE A PRODUCT FROM A VENDING MACHINE
+def update_product(store_name, product_name, machine_type, price, expiration_date, quantity):
+  with Session.begin() as session:
+    machine_id = get_machine_id(machine_type, store_name)
+    # Prepare the SQL UPDATE statement
+    update_statement = """
+        UPDATE Product
+        SET Price = :price, ExpirationDate = :expiration_date, Quantity = :quantity
+        WHERE Product.NameProduct = :product_name AND Product.MachineID = :machine_id
+    """
+
+    # Execute the SQL statement with provided parameters
+    session.execute(
+        text(update_statement),
+        {
+            "product_name": product_name,
+            "machine_id": machine_id,  # Corrected from machine_type
+            "price": price,
+            "expiration_date": expiration_date,
+            "quantity": quantity
+        }
+    )
+
+    session.commit()
+
+
 #MODIFY NUMBER OF VM IN A STORE
 def mod_store_vm_number(num_items, store_name):
   with Session() as session:
@@ -118,6 +147,45 @@ def mod_store_vm_number(num_items, store_name):
       session.rollback()
       # Handle the exception, e.g., log the error
       print("Error:", e)
+
+#MODIFY THE PRODUCT NUMBER IN A VENDING MACHINE
+def mod_product_number(num_items, machine_id):
+  with Session() as session:
+    try:
+      session.execute(
+          text(
+              "UPDATE VendingMachine SET VendingMachine.NumItems=:num_items WHERE VendingMachine.ID = :machine_id"
+          ), {
+              "num_items": num_items,
+              "machine_id": machine_id
+          })
+      session.commit()
+    except Exception as e:
+      session.rollback()
+      # Handle the exception, e.g., log the error
+      print("Error:", e)
+
+#FOR GETTING A MACHINE ID
+def get_machine_id(machine_type, store_name):
+  with Session() as session:
+    query = text("""
+            SELECT VendingMachine.id
+            FROM VendingMachine 
+            JOIN Store ON Store.NameStore = VendingMachine.NameStore
+            WHERE VendingMachine.MachineType = :machine_type
+            AND Store.NameStore =:store_name
+        """)
+
+    result = session.execute(query, {
+        "machine_type": machine_type,
+        "store_name": store_name
+    })
+    machine_ids = result.fetchall()
+
+    if machine_ids:
+      return machine_ids[0][0]
+    else:
+      return None
 
 
 #GETTING THE NUMBER OF MATCHINES IN A GIVEN STORE
@@ -198,22 +266,6 @@ def get_MaxCapacity_NumItems(machine_id):
       # You could also raise an exception here instead of returning a default value
       return -1
 
-#MODIFY THE PRODUCT NUMBER IN A VENDING MACHINE
-def mod_product_number(num_items, machine_id):
-  with Session() as session:
-    try:
-      session.execute(
-          text(
-              "UPDATE VendingMachine SET VendingMachine.NumItems=:num_items WHERE VendingMachine.ID = :machine_id"
-          ), {
-              "num_items": num_items,
-              "machine_id": machine_id
-          })
-      session.commit()
-    except Exception as e:
-      session.rollback()
-      # Handle the exception, e.g., log the error
-      print("Error:", e)
 
 #GET THE NUMBER OF PRODUCTS IN A MATCHINE
 def get_product_id(product_name, store_name, machine_type):
@@ -264,72 +316,6 @@ def get_product_number(product_name, store_name, machine_type):
       return None
 
 
-#REMOVE THE PRODUCT NUMBER IN A VENDING MACHINE
-def remove_product(product_id): # ORM
-  with Session.begin() as session:
-      session.execute(text("DELETE FROM Product WHERE Product.ID = :id"), {"id": product_id})
-      session.commit()
-
-#DELETE A VENDING MACHINE
-def delete_vending_machine(store_name,machine_type): # ORM
-  with Session.begin() as session:
-    machine_id= get_machine_id(machine_type, store_name)
-    if machine_id:
-      # Delete the products of the store
-      session.execute(text("DELETE FROM Product WHERE Product.MachineID = :id"), {"id": machine_id})
-      # Delete the Vening Machine
-      session.execute(text("DELETE FROM VendingMachine WHERE VendingMachine.ID = :id"), {"id": machine_id})
-
-#UPDATE A VENDING MACHINE
-def update_veding_machine(store_name, machine_type, max_capacity, working):
-  with Session.begin() as session:
-      # Prepare the SQL UPDATE statement
-      update_statement = "UPDATE VendingMachine SET "
-      update = []
-
-      if max_capacity is not None: 
-          update.append(f"MaxCapacity = :max_capacity")
-
-      if working is not None and working.isdigit():
-          update.append(f"Working = :working")
-      
-      update_statement += ", ".join(update)
-      update_statement += " WHERE VendingMachine.MachineType = :machine_type AND VendingMachine.NameStore = :store_name"
-
-      session.execute(
-          text(update_statement),
-          {"store_name": store_name, "machine_type": machine_type, "max_capacity": max_capacity, "working": working}
-      )
-
-      session.commit()
-      
-
-
-
-#UPDATE A PRODUCT FROM A VENDING MACHINE
-def update_product(store_name, product_name, machine_type, price, expiration_date, quantity):
-  with Session.begin() as session:
-    machine_id = get_machine_id(machine_type, store_name)
-    # Prepare the SQL UPDATE statement
-    update_statement = """
-        UPDATE Product
-        SET Price = :price, ExpirationDate = :expiration_date, Quantity = :quantity
-        WHERE Product.NameProduct = :product_name AND Product.MachineID = :machine_id
-    """
-
-    # Execute the SQL statement with provided parameters
-    session.execute(
-        text(update_statement),
-        {
-            "product_name": product_name,
-            "machine_id": machine_id,  # Corrected from machine_type
-            "price": price,
-            "expiration_date": expiration_date,
-            "quantity": quantity
-        }
-    )
-
-    session.commit()
 
 
 def get_quantity(product_name, machine_id):

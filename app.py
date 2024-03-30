@@ -18,8 +18,8 @@ def add():
 
 
 
-@app.route("/add_store", methods=['POST'])
-def add_store():
+@app.route("/add_vm", methods=['POST'])
+def add_vm():
     machine_type = request.form['machine_type']
     MaxCapacity = request.form['MaxCapacity']
     status = request.form['status']
