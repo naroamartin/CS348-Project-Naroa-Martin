@@ -316,8 +316,6 @@ def get_product_number(product_name, store_name, machine_type):
       return None
 
 
-
-
 def get_quantity(product_name, machine_id):
   with Session() as session:
       try:
@@ -376,5 +374,64 @@ def get_price_expiration(store_name,machine_type,product_name):
 
 
 
-hola= update_veding_machine('Rockade', 'Coffee', 250, None)
-print(hola)
+def call_vm_info(store_name, machine_type,vm_info): #PREPARE STATEMENT 
+  with engine.begin() as conn:
+
+    #3 options selected 
+    if "max_capacity" in vm_info and "working" in vm_info and "number_items" in vm_info:
+      stmt = text("SELECT VendingMachine.MaxCapacity, VendingMachine.Working, VendingMachine.NumItems FROM VendingMachine WHERE VendingMachine.NameStore =:store_name AND VendingMachine.MachineType =:machine_type ")
+      
+    #2 options selected 
+    elif "max_capacity" in vm_info and "working" in vm_info:
+      stmt = text("SELECT VendingMachine.MaxCapacity, VendingMachine.Working FROM VendingMachine WHERE VendingMachine.NameStore =:store_name AND VendingMachine.MachineType =:machine_type ")
+
+    elif "max_capacity" in vm_info and "number_items" in vm_info: 
+      stmt = text("SELECT VendingMachine.MaxCapacity, VendingMachine.NumItems FROM VendingMachine WHERE VendingMachine.NameStore =:store_name AND VendingMachine.MachineType =:machine_type ")
+    
+    elif "working" in vm_info and "number_items" in vm_info: 
+      stmt = text("SELECT VendingMachine.Working, VendingMachine.NumItems FROM VendingMachine WHERE VendingMachine.NameStore =:store_name AND VendingMachine.MachineType =:machine_type ")
+      
+    #1 options selected 
+    elif "max_capacity" in vm_info:
+      stmt = text("SELECT VendingMachine.MaxCapacity FROM VendingMachine WHERE VendingMachine.NameStore =:store_name AND VendingMachine.MachineType =:machine_type ")
+      
+    elif "working" in vm_info: 
+        stmt = text("SELECT VendingMachine.Working FROM VendingMachine WHERE VendingMachine.NameStore =:store_name AND VendingMachine.MachineType =:machine_type ")
+      
+    elif "number_items" in vm_info:
+        stmt = text("SELECT VendingMachine.NumItems FROM VendingMachine WHERE VendingMachine.NameStore =:store_name AND VendingMachine.MachineType =:machine_type ")
+
+    result = conn.execute(stmt, {"store_name": store_name, "machine_type": machine_type})  
+    info = result.fetchall()  # Fetch all rows as a list of tuples
+
+    #a lo mejor hay que añadir alguna funcionalidad, una vez comprobado que funciona
+    return info
+
+
+
+
+def call_product_info(product_name, machine_type, product_info):
+  with engine.begin() as conn:
+      columns = []
+      for info in product_info:
+          if info == "product_id":
+              columns.append("Product.ID")
+          elif info == "product_price":
+              columns.append("ProductPrice")
+          elif info == "expiration_date":
+              columns.append("Product.ExpirationDate")
+          elif info == "product_quantity":
+          columns.append("Product.Quantity")
+          elif info == "product_supplier":    ## esto hay que cambiarlo 
+              columns.append("Product.ProductSupplier")
+
+      if columns:
+          column_str = ', '.join(columns)
+          stmt = text(f"SELECT {column_str} FROM Product WHERE Product.ProductName = :product_name AND Product.MachineType = :machine_type")
+      else:
+          stmt = text("SELECT * FROM Product WHERE Product.ProductName = :product_name AND Product.MachineType = :machine_type")
+
+      result = conn.execute(stmt, {"product_name": product_name, "machine_type": machine_type})
+      info = result.fetchall()  # Fetch all rows as a list of tuples
+      return info
+

@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request
 
-from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration
+from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration, call_vm_info
 
 
 
@@ -11,7 +11,7 @@ app = Flask(__name__)
 def home():
   return render_template ("home.html")
 
-@app.route('/add')
+@app.route('/add') 
 def add():
     return render_template('add.html')
 
@@ -128,6 +128,7 @@ def delete_machine():
     elif machine_type not in vect:
         return render_template("delete_message-VM2.html")
 
+
 @app.route("/edit_vm", methods=['POST'])
 def edit_vm():
     store_name = request.form['store_name']
@@ -221,7 +222,19 @@ def display_books():
     products,price,date = get_products(store_name, machine_type)
     # Assuming you have a display.html template where you want to show the results
     return render_template("info.html", products=products,price=price,date=date)
-                                       
+
+
+@app.route("/reportvm", methods=['POST'])
+def reportvm():
+    store_name = request.form['store_name']
+    machine_type = request.form['machine_type']
+    
+    vect=get_machine_types(store_name)
+    if machine_type in vect: 
+      result = call_vm_info(store_name, machine_type,vm_info)
+    return result,store_name,machine_type #tengo que arreglar esto 
+
+
   
 @app.route('/delete')
 def delete():
@@ -234,6 +247,24 @@ def edit():
 @app.route('/info')
 def info():
     return render_template('info.html')
+  
+@app.route('/report_options')
+def report_options():
+    return render_template('report_options.html')
+
+@app.route('/report_product')
+def report_product():
+    return render_template('report_product.html')
+
+@app.route('/report_vm')
+def report_vm():
+    return render_template('report_vm.html')
+
+@app.route('/report_general')
+def report_general():
+    return render_template('report_general.html')
+
+
 
 
 

@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>CS348 Project</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="templates/css/index.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <style>
+    body{
+      display: flex;
+      justify-content:center;
+      align-items: center;
+      min-height: 100vh;
+
+    }
+    .wrapper{
+
+      width: 1000px; 
+      height: 525px;
+      background: #FFF0F5; 
+      border-radius:20px; 
+
+    }
+
+    .wrapper h1{
+      font-size: 25px; 
+      text-align: center;
+      text-decoration: blond; 
+      color: #C71585;
+      margin: 10px; 
+
+    }
+    .wrapper h3{
+      font-size: 20px; 
+      font-style: italic;
+      color: #C71585;
+      text-align: center; 
+      margin: 10px;
+
+    }
+
+    button{
+      border: none;
+      color: white;
+      padding: 16px 32px;
+      text-align: center;
+      display: flex;
+      font-size: 16px;
+      transition-duration: 0.4s;
+      cursor:pointer;
+      border-radius: 12px;
+      background-color:#FFE4E1; 
+      color: black; 
+      border: 2px solid black;
+      margin-left: 155px; 
+      margin-top: 30px; 
+      margin-bottom: 30px; 
+      width: 32%;
+
+    }
+    .button:hover {
+      background-color: grey;
+      color: white;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="container position-relative">
+    <div class="wrapper position-absolute top-0 start-50 translate-middle ">
+
+      <div class="content">
+        <div class= "mx-4 mt-4">
+          <div id="report-product">
+            <form method="post" action="/show_products">
+
+
+                <div class="row gx-5">
+                  <div class="col">
+                    <h3> Search a product </h3>
+
+                    <label for="store_name" class="form-label">Product Name</label>
+                    <input type="text" class="form-control" id="store_name" name="store_name" placeholder="Enter a Name ">
+
+                    <p>Select Type</p>
+            
+                    <select id="machine_type" name="machine_type" class="form-select mb-1" aria-label="Default select example">
+                        <option value="Food">Food</option>
+                        <option value="Coffee">Coffee</option>
+                        <option value="Drink">Drink</option>
+                        <option value="Snacks">Snack</option>
+                    </select> 
+
+                  </div>
+                  <div class="col">
+                    <h3> Select what data to dislay</h3>
+                    
+                    
+                    <div class="form-check mx-5 mt-4">
+                      <input class="form-check-input" type="checkbox" id="info-id" name="product_info" value="product_id" checked>
+                      <label class="form-check-label" for="info-id">
+                        Product ID
+                      </label>
+                    </div>
+                    <div class="form-check mx-5 ">
+                      <input class="form-check-input" type="checkbox" id="info-price" name="product_info" value="product_price" checked>
+                      <label class="form-check-label" for="info-price">
+                        Price 
+                      </label>
+                    </div>
+                    <div class="form-check mx-5 ">
+                      <input class="form-check-input" type="checkbox" id="info-exp" name="product_info" value="expiration_date" checked>
+                      <label class="form-check-label" for="info-exp">
+                        Expiration Date  
+                      </label>
+                    </div>
+                    <div class="form-check mx-5 ">
+                      <input class="form-check-input" type="checkbox" id="info-quantity" name="product_info" value="product_quantity" checked>
+                      <label class="form-check-label" for="info-quantity">
+                        Quantity   
+                      </label>
+                    </div> 
+                    <div class="form-check mx-5 ">
+                      <input class="form-check-input" type="checkbox" id="info-supplier" name="product_info" value="product_supplier" checked>
+                      <label class="form-check-label" for="info-supplier">
+                        Supplier info    
+                      </label>
+                    </div>
+                  </div>
+
+                   <h3> REPORT FOR PRODUCT</h3>
+                </div>
+            </form>
+          </div>
+        </div>
+
+      </div>	
+
+    </div>
+  </div>
+</body>
+</html>

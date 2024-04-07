@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <title>CS348 Project</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" type="text/css" href="templates/css/index.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <style>
+    body{
+      display: flex;
+      justify-content:center;
+      align-items: center;
+      min-height: 100vh;
+
+    }
+    .wrapper{
+
+      width: 1200px; 
+      height: 525px;
+      background: #FFF0F5; 
+      border-radius:20px; 
+
+    }
+
+    .wrapper h1{
+      font-size: 25px; 
+      text-align: center;
+      text-decoration: blond; 
+      color: #C71585;
+      margin: 10px; 
+
+    }
+    .wrapper h3{
+      font-size: 20px; 
+      font-style: italic;
+      color: #C71585;
+      text-align: center; 
+      margin: 10px;
+
+    }
+
+    button{
+      border: none;
+      color: white;
+      padding: 16px 32px;
+      text-align: center;
+      display: flex;
+      font-size: 16px;
+      transition-duration: 0.4s;
+      cursor:pointer;
+      border-radius: 12px;
+      background-color:#FFE4E1; 
+      color: black; 
+      border: 2px solid black;
+      margin-left: 155px; 
+      margin-top: 30px; 
+      margin-bottom: 30px; 
+      width: 32%;
+
+    }
+    .button:hover {
+      background-color: grey;
+      color: white;
+    }
+
+  </style>
+</head>
+
+<body>
+  <div class="container position-relative">
+    <div class="wrapper position-absolute top-0 start-50 translate-middle ">
+
+      <div class="content">
+        <div class= "mx-4 mt-4">
+          <div id="report-product">
+            <form method="post" action="/show_products">
+              <h3>Select data to display</h3>
+              <div class="form-check form-check-inline mx-5">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1">
+                <label class="form-check-label" for="inlineCheckbox1">Stores</label>
+              </div>
+              <div class="form-check form-check-inline mx-5">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                <label class="form-check-label" for="inlineCheckbox2">Vending Machines</label>
+              </div>
+              <div class="form-check form-check-inline mx-5">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                <label class="form-check-label" for="inlineCheckbox2">Products</label>
+              </div>
+              <div class="form-check form-check-inline mx-5">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                <label class="form-check-label" for="inlineCheckbox2">Employees</label>
+              </div>
+              <div class="form-check form-check-inline mx-5">
+                <input class="form-check-input" type="checkbox" id="inlineCheckbox2" value="option2">
+                <label class="form-check-label" for="inlineCheckbox2">Supplier</label>
+              </div>
+
+            </form>
+          </div>
+        </div>
+
+      </div>	
+
+    </div>
+  </div>
+</body>
+</html>
