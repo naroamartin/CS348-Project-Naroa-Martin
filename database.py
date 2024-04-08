@@ -413,19 +413,39 @@ def call_product_info(product_name, machine_type, product_info):
       columns = []
       for info in product_info:
           if info == "product_id":
-              columns.append("Product.ID")
+            columns.append("Product.ID")
           elif info == "product_price":
-              columns.append("Product.Price")
+            columns.append("Product.Price")
           elif info == "expiration_date":
-              columns.append("Product.ExpirationDate")
+            columns.append("Product.ExpirationDate")
           elif info == "product_quantity":
-              columns.append("Product.Quantity")
+            columns.append("Product.Quantity")
 
       if columns:
           column_str = ', '.join(columns)
           stmt = text(f"SELECT Store.NameStore,{column_str} FROM Product JOIN VendingMachine ON Product.MachineID=VendingMachine.ID JOIN Store ON Store.NameStore= VendingMachine.NameStore WHERE Product.NameProduct =:product_name AND VendingMachine.MachineType = :machine_type")
-     
 
       result = conn.execute(stmt, {"product_name": product_name, "machine_type": machine_type})
-      info = result.fetchall()  # Fetch all rows as a list of tuples
-      return info
+      info = result.fetchall() 
+
+      #select min price and teh store in which is sell 
+      sql_min_price = text("SELECT Product.Price, Store.NameStore  FROM Product JOIN VendingMachine ON VendingMachine.ID = Product.MachineID JOIN Store ON Store.NameStore = VendingMachine.NameStore WHERE Product.NameProduct = :product_name AND Product.Price = (SELECT MIN(Price) FROM Product WHERE Product.NameProduct = :product_name);")
+    
+      min_price1 = conn.execute(sql_min_price, {"product_name": product_name})
+      min_price = [{"Store": row[1], "Min Price": row[0]} for row in min_price1]
+
+      sql_max_price = text("SELECT Product.Price, Store.NameStore  FROM Product JOIN VendingMachine ON VendingMachine.ID = Product.MachineID JOIN Store ON Store.NameStore = VendingMachine.NameStore WHERE Product.NameProduct = :product_name AND Product.Price = (SELECT MAX(Price) FROM Product WHERE Product.NameProduct = :product_name);")
+  
+      max_price1 = conn.execute(sql_max_price, {"product_name": product_name})
+      max_price = [{"Store": row[1], "Max Price": row[0]} for row in max_price1]
+    
+      sql_avg_price = text("SELECT ROUND(AVG(Product.Price),2) FROM  Product WHERE Product.NameProduct =:product_name;")
+    
+      avg_price = conn.execute(sql_avg_price, {"product_name": product_name})
+      avg_price =  avg_price.scalar()
+    
+  return {"Info": info, "Minimum Price of the product and its store": min_price,"Maximum Price of the product and its store": max_price, "Average Prices of the Product at Each Store": avg_price}
+
+
+
+
