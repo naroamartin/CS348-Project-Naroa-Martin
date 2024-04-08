@@ -408,8 +408,6 @@ def call_vm_info(store_name, machine_type,vm_info): #PREPARE STATEMENT
     return info
 
 
-
-
 def call_product_info(product_name, machine_type, product_info):
   with engine.begin() as conn:
       columns = []
@@ -417,21 +415,17 @@ def call_product_info(product_name, machine_type, product_info):
           if info == "product_id":
               columns.append("Product.ID")
           elif info == "product_price":
-              columns.append("ProductPrice")
+              columns.append("Product.Price")
           elif info == "expiration_date":
               columns.append("Product.ExpirationDate")
           elif info == "product_quantity":
-          columns.append("Product.Quantity")
-          elif info == "product_supplier":    ## esto hay que cambiarlo 
-              columns.append("Product.ProductSupplier")
+              columns.append("Product.Quantity")
 
       if columns:
           column_str = ', '.join(columns)
-          stmt = text(f"SELECT {column_str} FROM Product WHERE Product.ProductName = :product_name AND Product.MachineType = :machine_type")
-      else:
-          stmt = text("SELECT * FROM Product WHERE Product.ProductName = :product_name AND Product.MachineType = :machine_type")
+          stmt = text(f"SELECT Store.NameStore,{column_str} FROM Product JOIN VendingMachine ON Product.MachineID=VendingMachine.ID JOIN Store ON Store.NameStore= VendingMachine.NameStore WHERE Product.NameProduct =:product_name AND VendingMachine.MachineType = :machine_type")
+     
 
       result = conn.execute(stmt, {"product_name": product_name, "machine_type": machine_type})
       info = result.fetchall()  # Fetch all rows as a list of tuples
       return info
-

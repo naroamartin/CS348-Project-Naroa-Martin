@@ -232,7 +232,8 @@ def reportvm():
     vect=get_machine_types(store_name)
     if machine_type in vect: 
       result = call_vm_info(store_name, machine_type,vm_info)
-    return result,store_name,machine_type #tengo que arreglar esto 
+      return result
+    
 
 
   
