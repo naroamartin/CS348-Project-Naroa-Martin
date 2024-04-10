@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request,jsonify
 
 from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration, call_vm_info
 
@@ -224,19 +224,64 @@ def display_books():
     return render_template("info.html", products=products,price=price,date=date)
 
 
+
+
 @app.route("/reportvm", methods=['POST'])
 def reportvm():
-    store_name = request.form['store_name']
-    machine_type = request.form['machine_type']
-    
-    vect=get_machine_types(store_name)
-    if machine_type in vect: 
-      result = call_vm_info(store_name, machine_type,vm_info)
-      return result
+  store_name = request.form['store_name']
+  machine_type = request.form['machine_type']
+  vm_info = request.form.getlist('vm_info[]')
+
+  vect = get_machine_types(store_name)
+
+  if vect is None:
+      return "Error:Introduce a name"
+
+  if machine_type not in vect:
+      return "Error: Invalid machine type"
     
 
+  result = call_vm_info(store_name, machine_type, vm_info)
 
-  
+  # Convert result to a list of dictionaries
+  vm_data = []
+  for row in result:
+      data = {}
+      if 'max_capacity' in vm_info and 'working' in vm_info and 'number_items' in vm_info: 
+          data['max_capacity'] = row[0]
+          data['working'] = row[1]
+          data['number_items'] = row[2]
+        
+      elif 'max_capacity' in vm_info and 'working' in vm_info and 'number_items' not in vm_info: 
+        data['max_capacity'] = row[0]
+        data['working'] = row[1]
+        
+      elif 'max_capacity' in vm_info and 'working' not in  vm_info and 'number_items' in vm_info: 
+        data['max_capacity'] = row[0]
+        data['number_items'] = row[1]
+        
+      elif 'max_capacity' not in vm_info and 'working' in  vm_info and 'number_items' in vm_info: 
+        data['working'] = row[0]
+        data['number_items'] = row[1]
+        
+      elif 'max_capacity' in vm_info and 'working' not in  vm_info and 'number_items'  not in vm_info: 
+        data['max_capacity'] = row[0]
+      elif 'max_capacity'  not in vm_info and 'working'  in  vm_info and 'number_items'  not in vm_info: 
+        data['working'] = row[0]
+        
+      elif 'max_capacity'  not in vm_info and 'working'  not in  vm_info and 'number_items'  in vm_info: 
+         data['number_items'] = row[0]
+      else: 
+         data=[]
+      
+      vm_data.append(data)
+    
+  return render_template('report_vm.html', vm_data= vm_data, store_name=store_name, machine_type=machine_type)
+
+
+
+
+
 @app.route('/delete')
 def delete():
       return render_template('delete.html')

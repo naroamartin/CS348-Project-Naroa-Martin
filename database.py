@@ -402,9 +402,10 @@ def call_vm_info(store_name, machine_type,vm_info): #PREPARE STATEMENT
         stmt = text("SELECT VendingMachine.NumItems FROM VendingMachine WHERE VendingMachine.NameStore =:store_name AND VendingMachine.MachineType =:machine_type ")
 
     result = conn.execute(stmt, {"store_name": store_name, "machine_type": machine_type})  
-    info = result.fetchall()  # Fetch all rows as a list of tuples
+  
+    info = [list(row) for row in result]  # Convert each tuple into a list
 
-    #a lo mejor hay que añadir alguna funcionalidad, una vez comprobado que funciona
+
     return info
 
 
