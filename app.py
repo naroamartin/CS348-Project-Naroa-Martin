@@ -243,7 +243,7 @@ def reportvm():
 
   result = call_vm_info(store_name, machine_type, vm_info)
 
-  # Convert result to a list of dictionaries
+ 
   vm_data = []
   for row in result:
       data = {}
@@ -279,7 +279,18 @@ def reportvm():
   return render_template('report_vm.html', vm_data= vm_data, store_name=store_name, machine_type=machine_type)
 
 
+@app.route("/reportproduct", methods=['POST'])
+def reportproduct():
+    product_name = request.form['product_name']
+    machine_type = request.form['machine_type']
+    product_info = request.form.getlist('product_info')
 
+    products = call_product_info(product_name, machine_type, product_info)
+  
+    return render_template('report_product.html', products=products, product_name=product_name, machine_type=machine_type)
+
+
+  
 
 
 @app.route('/delete')
