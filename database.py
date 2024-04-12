@@ -447,6 +447,11 @@ def call_product_info(product_name, machine_type, product_info):
     
   return {"Info": info, "Minimum": min_price,"Maximum": max_price, "Average": avg_price}
 
+
+
+
+
+
 def call_stores():
   with engine.begin() as conn:
      stmt = text("SELECT NameStore, City, Address, NumMachines FROM Store")
@@ -456,9 +461,11 @@ def call_stores():
      stmt_space = text("SELECT Store.NameStore,VendingMachine.MachineType,(VendingMachine.MaxCapacity-VendingMachine.NumItems) AS Availability FROM VendingMachine JOIN Store ON VendingMachine.NameStore = Store.NameStore")
      result = conn.execute(stmt_space)
 
-     stores_availability = [{"Store Name ": row[0], "Machine Type": row[1],"Availability": row[2]} for row in result]
+     stores_availability = [{"Store Name": row[0], "Machine Type": row[1],"Availability": row[2]} for row in result]
 
      return stores,stores_availability
+
+
 
 def call_product():
   with engine.begin() as conn:
@@ -491,8 +498,51 @@ def call_vm():
       ]
       return distinct_vm
 
-  
-  
 
-distinct_product = call_vm()
-print(distinct_product)
+def call_employees():
+  with engine.begin() as conn:
+      stmt = text("""
+         SELECT Employees.ID,Employees.Name, Employees.Address, Employees.PhoneNumber,Employees.NameStore, COUNT(*) AS NumWorkers
+FROM Employees GROUP BY Employees.NameStore;
+      """)
+
+      employees1 = conn.execute(stmt)
+      employees = [
+          {
+              "ID": row[0],
+              "Name": row[1],
+              "Address": row[2],
+              "Phone Number": row[3],
+              "Store Name": row[4],
+              "Number of Workers in Store": row[5]
+          }
+          for row in employees1
+      ]
+      return employees
+
+def check_product(product_name): 
+  with Session() as session:
+    try:
+        query = text(
+            "SELECT DISTINCT(VendingMachine.MachineType) FROM VendingMachine JOIN Product ON Product.MachineID = VendingMachine.ID WHERE Product.NameProduct=:product_name")
+        result = session.execute(query, {"product_name": product_name})
+        types = result.fetchall() 
+        if  types:
+            return [row[0] for row in types]
+        else:
+           
+            return -1
+    except Exception as e:
+       
+        print("Error:", e)
+        
+        return -1
+
+
+result = call_product()
+vect=[]
+for product in result:
+    vect.append(product["Product Name"])
+
+print(vect)
+   

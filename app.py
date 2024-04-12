@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request,jsonify
 
-from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration, call_vm_info,call_product_info
+from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration, call_vm_info,call_product_info,call_stores,call_product,call_vm,call_employees,check_product
 
 
 
@@ -286,18 +286,56 @@ def reportproduct():
     product_name = request.form['product_name']
     machine_type = request.form['machine_type']
     product_info = request.form.getlist('product_info')
+    vect= check_product(product_name)
 
-    products = call_product_info(product_name, machine_type, product_info)
-    info= products['Info']
-    minimum=products['Minimum']
-    maximum= products['Maximum']
-    average= products['Average']
-
-    return render_template('report_product2.html',product_name=product_name, info=info, minimum=minimum, maximum=maximum, average=average)
+    result = call_product()
+    vect2=[]
+    for product in result:
+        vect2.append(product["Product Name"])
+      
+    if product_name in vect2:
+      if machine_type in vect:
   
+        products = call_product_info(product_name, machine_type, product_info)
+        info= products['Info']
+        minimum=products['Minimum']
+        maximum= products['Maximum']
+        average= products['Average']
+    
+        return render_template('report_product2.html',product_name=product_name, info=info, minimum=minimum, maximum=maximum, average=average)
+  
+      elif machine_type not in vect: 
+        return 'That product is not in the selected machine'
+    elif product not in vect2: 
+        return 'Product does not exist'
+      
 
 
 
+@app.route("/report", methods=['POST'])
+def report():
+    report = request.form.getlist('report')
+
+    # Call functions based on selected options
+    stores = []
+    stores_availability = []
+    vm = []
+    products = []
+    employees = []
+
+    if 'Stores' in report:
+        stores, stores_availability = call_stores()
+    if 'Vending Machines' in report:
+        vm = call_vm()
+    if 'Products' in report:
+        products = call_product()
+    if 'Employees' in report:
+        employees = call_employees()
+
+    return render_template('report_general2.html', stores=stores, stores_availability=stores_availability, vm=vm, products=products, employees=employees)
+
+
+  
 
 @app.route('/delete')
 def delete():

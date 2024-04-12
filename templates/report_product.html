@@ -77,7 +77,7 @@
       <div class="content">
         <div class= "mx-4 mt-4">
           <div id="report-product">
-            <form method="post" action="/reportproduct"  >
+            <form method="post" action="/reportproduct" onsubmit="return validateForm()" >
 
 
                 <div class="row gx-5">
@@ -143,4 +143,20 @@
     </div>
   </div>
 </body>
+<script>
+  function validateForm() {
+    var checkboxes = document.querySelectorAll('.info-checkbox');
+    var checked = false;
+    checkboxes.forEach(function(checkbox) {
+      if (checkbox.checked) {
+        checked = true;
+      }
+    });
+    if (!checked) {
+      alert("Please check at least one box");
+      return false;
+    }
+    return true;
+  }
+</script>
 </html>
