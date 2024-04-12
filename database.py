@@ -447,8 +447,52 @@ def call_product_info(product_name, machine_type, product_info):
     
   return {"Info": info, "Minimum": min_price,"Maximum": max_price, "Average": avg_price}
 
+def call_stores():
+  with engine.begin() as conn:
+     stmt = text("SELECT NameStore, City, Address, NumMachines FROM Store")
+     store1 = conn.execute(stmt)
+     stores = [{"Store Name": row[0], "City": row[1],"Address": row[2],"Number of Machines": row[3]} for row in store1]
+
+     stmt_space = text("SELECT Store.NameStore,VendingMachine.MachineType,(VendingMachine.MaxCapacity-VendingMachine.NumItems) AS Availability FROM VendingMachine JOIN Store ON VendingMachine.NameStore = Store.NameStore")
+     result = conn.execute(stmt_space)
+
+     stores_availability = [{"Store Name ": row[0], "Machine Type": row[1],"Availability": row[2]} for row in result]
+
+     return stores,stores_availability
+
+def call_product():
+  with engine.begin() as conn:
+     stmt = text("SELECT DISTINCT(Product.NameProduct), ROUND(AVG(Product.Price),2),ROUND(AVG(Product.Quantity),2) FROM Product GROUP BY NameProduct")
+     distinct_product1 = conn.execute(stmt)
+     distinct_product = [{"Product Name": row[0], "Average Price": row[1],"Average Quantity": row[2]} for row in  distinct_product1]
+     return distinct_product
 
 
+def call_vm():
+  with engine.begin() as conn:
+      stmt = text("""
+          SELECT DISTINCT(MachineType),
+                 ROUND(AVG(NumItems), 2) AS AvgNumItems,
+                 ROUND(AVG(MaxCapacity), 2) AS AvgMaxCapacity,
+                 COUNT(CASE WHEN Working = 1 THEN 1 ELSE NULL END) AS WorkingMachines
+          FROM VendingMachine
+          GROUP BY VendingMachine.MachineType
+      """)
 
-result= call_product_info('Chips', 'Food', [ 'product_id','product_price', 'expiration_date', 'product_quantity'])
-print(result['Minimum'][0]['Store'])  
+      distinct_vm1 = conn.execute(stmt)
+      distinct_vm = [
+          {
+              "Machine Type": row[0],
+              "Average Number of Items": row[1],
+              "Average Maximum Capacity": row[2],
+              "Number of Working Machines": row[3]
+          }
+          for row in distinct_vm1
+      ]
+      return distinct_vm
+
+  
+  
+
+distinct_product = call_vm()
+print(distinct_product)

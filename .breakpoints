@@ -4,15 +4,23 @@
       {
         "id": "5e478ea7-aaac-43de-9f17-466f6ceed3d0",
         "line": 1,
-        "version": 9001,
+        "version": 9120,
         "index": 0
+      }
+    ],
+    "templates/report_general.html": [
+      {
+        "id": "92ba8217-ea24-4179-ae2e-33705c3bc3ba",
+        "line": 93,
+        "version": 374,
+        "index": 2828
       }
     ],
     "templates/report_vm.html": [
       {
         "id": "9b9bd596-28cf-48c2-94ef-cbd097f92bd2",
         "line": 1,
-        "version": 1208,
+        "version": 1212,
         "index": 0
       }
     ]

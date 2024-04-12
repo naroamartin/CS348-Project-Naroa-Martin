@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request,jsonify
 
-from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration, call_vm_info
+from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration, call_vm_info,call_product_info
 
 
 
@@ -279,6 +279,8 @@ def reportvm():
   return render_template('report_vm.html', vm_data= vm_data, store_name=store_name, machine_type=machine_type)
 
 
+
+
 @app.route("/reportproduct", methods=['POST'])
 def reportproduct():
     product_name = request.form['product_name']
@@ -286,11 +288,15 @@ def reportproduct():
     product_info = request.form.getlist('product_info')
 
     products = call_product_info(product_name, machine_type, product_info)
+    info= products['Info']
+    minimum=products['Minimum']
+    maximum= products['Maximum']
+    average= products['Average']
+
+    return render_template('report_product2.html',product_name=product_name, info=info, minimum=minimum, maximum=maximum, average=average)
   
-    return render_template('report_product.html', products=products, product_name=product_name, machine_type=machine_type)
 
 
-  
 
 
 @app.route('/delete')
