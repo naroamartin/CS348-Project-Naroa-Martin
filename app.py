@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request,jsonify
 
-from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration, call_vm_info,call_product_info,call_stores,call_product,call_vm,call_employees,check_product
+from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration, call_vm_info,call_product_info,call_stores,call_product,call_vm,call_employees,check_product,check_store
 
 
 
@@ -215,6 +215,7 @@ def edit_product():
       return render_template("edit_message_p4.html")
 
 
+
 @app.route("/show_products", methods=['POST'])
 def display_books():
     store_name = request.form['store_name']
@@ -232,52 +233,59 @@ def reportvm():
   machine_type = request.form['machine_type']
   vm_info = request.form.getlist('vm_info[]')
 
-  vect = get_machine_types(store_name)
-
-  if vect is None:
-      return "Error:Introduce a name"
-
-  if machine_type not in vect:
-      return "Error: Invalid machine type"
+  stores = check_store()
+  
+  if store_name in stores:
     
-
-  result = call_vm_info(store_name, machine_type, vm_info)
-
- 
-  vm_data = []
-  for row in result:
-      data = {}
-      if 'max_capacity' in vm_info and 'working' in vm_info and 'number_items' in vm_info: 
-          data['max_capacity'] = row[0]
-          data['working'] = row[1]
-          data['number_items'] = row[2]
-        
-      elif 'max_capacity' in vm_info and 'working' in vm_info and 'number_items' not in vm_info: 
-        data['max_capacity'] = row[0]
-        data['working'] = row[1]
-        
-      elif 'max_capacity' in vm_info and 'working' not in  vm_info and 'number_items' in vm_info: 
-        data['max_capacity'] = row[0]
-        data['number_items'] = row[1]
-        
-      elif 'max_capacity' not in vm_info and 'working' in  vm_info and 'number_items' in vm_info: 
-        data['working'] = row[0]
-        data['number_items'] = row[1]
-        
-      elif 'max_capacity' in vm_info and 'working' not in  vm_info and 'number_items'  not in vm_info: 
-        data['max_capacity'] = row[0]
-      elif 'max_capacity'  not in vm_info and 'working'  in  vm_info and 'number_items'  not in vm_info: 
-        data['working'] = row[0]
-        
-      elif 'max_capacity'  not in vm_info and 'working'  not in  vm_info and 'number_items'  in vm_info: 
-         data['number_items'] = row[0]
-      else: 
-         data=[]
+    vect = get_machine_types(store_name)
+    if vect is None:
+        return "Error:Introduce a name"
+    if machine_type not in vect:
+        return render_template("report_message3.html")
+    
+    if machine_type in vect:
+      result = call_vm_info(store_name, machine_type, vm_info)
       
-      vm_data.append(data)
+     
+      vm_data = []
+      for row in result:
+          data = {}
+          if 'max_capacity' in vm_info and 'working' in vm_info and 'number_items' in vm_info: 
+              data['max_capacity'] = row[0]
+              data['working'] = row[1]
+              data['number_items'] = row[2]
+            
+          elif 'max_capacity' in vm_info and 'working' in vm_info and 'number_items' not in vm_info: 
+            data['max_capacity'] = row[0]
+            data['working'] = row[1]
+            
+          elif 'max_capacity' in vm_info and 'working' not in  vm_info and 'number_items' in vm_info: 
+            data['max_capacity'] = row[0]
+            data['number_items'] = row[1]
+            
+          elif 'max_capacity' not in vm_info and 'working' in  vm_info and 'number_items' in vm_info: 
+            data['working'] = row[0]
+            data['number_items'] = row[1]
+            
+          elif 'max_capacity' in vm_info and 'working' not in  vm_info and 'number_items'  not in vm_info: 
+            data['max_capacity'] = row[0]
+          elif 'max_capacity'  not in vm_info and 'working'  in  vm_info and 'number_items'  not in vm_info: 
+            data['working'] = row[0]
+            
+          elif 'max_capacity'  not in vm_info and 'working'  not in  vm_info and 'number_items'  in vm_info: 
+             data['number_items'] = row[0]
+          else: 
+             data=[]
+          
+          vm_data.append(data)
+        
+      return render_template('report_vm.html', vm_data= vm_data, store_name=store_name, machine_type=machine_type)
     
-  return render_template('report_vm.html', vm_data= vm_data, store_name=store_name, machine_type=machine_type)
-
+  elif store_name not in stores: 
+    
+    return render_template("report_message4.html")
+  
+  
 
 
 
@@ -305,9 +313,9 @@ def reportproduct():
         return render_template('report_product2.html',product_name=product_name, info=info, minimum=minimum, maximum=maximum, average=average)
   
       elif machine_type not in vect: 
-        return 'That product is not in the selected machine'
+        return render_template("report_message1.html")
     elif product not in vect2: 
-        return 'Product does not exist'
+       return render_template("report_message2.html")
       
 
 

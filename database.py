@@ -538,11 +538,25 @@ def check_product(product_name):
         
         return -1
 
+def check_store(): 
+  with Session() as session:
+    try:
+        query = text(
+            "SELECT DISTINCT(NameStore) FROM Store")
+        result = session.execute(query)
+        stores = result.fetchall() 
+        if  stores:
+            return [row[0] for row in stores]
+        else:
 
-result = call_product()
-vect=[]
-for product in result:
-    vect.append(product["Product Name"])
+            return -1
+    except Exception as e:
 
-print(vect)
+        print("Error:", e)
+
+        return -1
+
+result = check_store()
+if 'Ametsa' in result:
+  print("Store found")
    
