@@ -2,18 +2,31 @@ from sqlalchemy import create_engine, text
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
+
+
+
+db_connection_string = "mysql+pymysql://naroamartin:ZsQzfMRSjCc9j5G08exZ@cs348db.cbq6mk20o7yu.us-east-2.rds.amazonaws.com:3306/cs348db?charset=utf8mb4"
+
+
+# Create the SQLAlchemy engine with the specified isolation level
 engine = create_engine(
-    "mysql+pymysql://naroamartin:ZsQzfMRSjCc9j5G08exZ@cs348db.cbq6mk20o7yu.us-east-2.rds.amazonaws.com:3306/cs348db?charset=utf8mb4"
+    db_connection_string,
+    connect_args={
+        "ssl": {
+            "ssl_ca": ""
+        }
+    },
+    isolation_level="REPEATABLE READ"
 )
 
 Session = sessionmaker(bind=engine)
 
-
-#UPLOAD A NEW PRODUCT
-def upload_product(product_name, product_price, expiration_date,
-                   product_quantity, product_machineID):
+#-----------------------------------------------------------------------------------------------------------
+#UPLOAD A NEW PRODUCT (STORE PROCEDURE)
+def upload_product(product_name, product_price, expiration_date,product_quantity, product_machineID):
   try:
     with Session() as session:
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       # Inserting the new product into the database
       session.execute(
           text(
@@ -36,11 +49,12 @@ def upload_product(product_name, product_price, expiration_date,
 
 
 
-#ADDING A NEW VENING MATCHINE IN THE DATABASE
+#ADDING A NEW VENING MATCHINE IN THE DATABASE (STORE PROCEDURE)
 def upload_Vending_Machine(vm_type, vm_maxcapacity, vm_working, vm_numitems,
                            vm_namestore):
   try:
     with Session() as session:
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       # Inserting the new product into the database
       session.execute(
           text(
@@ -62,16 +76,18 @@ def upload_Vending_Machine(vm_type, vm_maxcapacity, vm_working, vm_numitems,
     return f"Error: {str(e)}"
 
 
-#REMOVE THE PRODUCT NUMBER IN A VENDING MACHINE
+#REMOVE THE PRODUCT NUMBER IN A VENDING MACHINE (STORE PROCEDURE)
 def remove_product(product_id): # ORM
   with Session.begin() as session:
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       session.execute(text("DELETE FROM Product WHERE Product.ID = :id"), {"id": product_id})
       session.commit()
 
 
-#DELETE A VENDING MACHINE
+#DELETE A VENDING MACHINE (STORE PROCEDURE)
 def delete_vending_machine(store_name,machine_type): # ORM
   with Session.begin() as session:
+    session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
     machine_id= get_machine_id(machine_type, store_name)
     if machine_id:
       # Delete the products of the store
@@ -80,10 +96,11 @@ def delete_vending_machine(store_name,machine_type): # ORM
       session.execute(text("DELETE FROM VendingMachine WHERE VendingMachine.ID = :id"), {"id": machine_id})
       
 
-#UPDATE A VENDING MACHINE
+#UPDATE A VENDING MACHINE (STORE PROCEDURE)
 def update_veding_machine(store_name, machine_type, max_capacity, working):
   with Session.begin() as session:
       # Prepare the SQL UPDATE statement
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       update_statement = "UPDATE VendingMachine SET "
       update = []
 
@@ -105,9 +122,10 @@ def update_veding_machine(store_name, machine_type, max_capacity, working):
 
 
 
-#UPDATE A PRODUCT FROM A VENDING MACHINE
+#UPDATE A PRODUCT FROM A VENDING MACHINE (STORE PROCEDURE)
 def update_product(store_name, product_name, machine_type, price, expiration_date, quantity):
   with Session.begin() as session:
+    session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
     machine_id = get_machine_id(machine_type, store_name)
     # Prepare the SQL UPDATE statement
     update_statement = """
@@ -131,10 +149,11 @@ def update_product(store_name, product_name, machine_type, price, expiration_dat
     session.commit()
 
 
-#MODIFY NUMBER OF VM IN A STORE
+#MODIFY NUMBER OF VM IN A STORE (STORE PROCEDURE)
 def mod_store_vm_number(num_items, store_name):
   with Session() as session:
     try:
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       session.execute(
           text(
               "UPDATE Store SET NumMachines= :num_items WHERE NameStore = :store_name"
@@ -148,10 +167,12 @@ def mod_store_vm_number(num_items, store_name):
       # Handle the exception, e.g., log the error
       print("Error:", e)
 
-#MODIFY THE PRODUCT NUMBER IN A VENDING MACHINE
+
+#MODIFY THE PRODUCT NUMBER IN A VENDING MACHINE (STORE PROCEDURE)
 def mod_product_number(num_items, machine_id):
   with Session() as session:
     try:
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       session.execute(
           text(
               "UPDATE VendingMachine SET VendingMachine.NumItems=:num_items WHERE VendingMachine.ID = :machine_id"
@@ -165,7 +186,8 @@ def mod_product_number(num_items, machine_id):
       # Handle the exception, e.g., log the error
       print("Error:", e)
 
-#FOR GETTING A MACHINE ID
+
+#FOR GETTING A MACHINE ID (STORE PROCEDURE)-HANDLE ERRORS
 def get_machine_id(machine_type, store_name):
   with Session() as session:
     query = text("""
@@ -188,10 +210,11 @@ def get_machine_id(machine_type, store_name):
       return None
 
 
-#GETTING THE NUMBER OF MATCHINES IN A GIVEN STORE
+#GETTING THE NUMBER OF MATCHINES IN A GIVEN STORE (STORE PROCEDURE)-HANDLE ERRORS
 def get_number_of_machines(store_name):
   with Session() as session:
     try:
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       query = text(
           "SELECT DISTINCT(Store.NumMachines) FROM Store WHERE Store.NameStore=:store_name;"
       )
@@ -207,10 +230,11 @@ def get_number_of_machines(store_name):
       return None
 
 
-#GETTING THE MACHINE TYPES IN A GIVEN STORE
+#GETTING THE MACHINE TYPES IN A GIVEN STORE (STORE PROCEDURE)-HANDLE ERRORS
 def get_machine_types(store_name):
   with Session() as session:
     try:
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       query = text(
           "SELECT VendingMachine.MachineType FROM VendingMachine WHERE VendingMachine.NameStore=:store_name;"
       )
@@ -224,10 +248,11 @@ def get_machine_types(store_name):
       print("Error:", e)
       return None
 
-#GETTING ALL PRODUCTS OF A CERTAIN MACHINE IN A STORE
+#GETTING ALL PRODUCTS OF A CERTAIN MACHINE IN A STORE (STORE PROCEDURE)-HANDLE ERRORS
 def get_product_types(store_name, machine_type):
   with Session() as session:
     try:
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       query = text(
           "SELECT Product.NameProduct FROM Product JOIN VendingMachine ON  VendingMachine.ID= Product.MachineID  WHERE VendingMachine.NameStore= :store_name AND VendingMachine.MachineType= :machine_type;"
       )
@@ -246,10 +271,11 @@ def get_product_types(store_name, machine_type):
       print("Error:", e)
       return None
 
-#GET THE MAXCAPACITY AND NUMBER ITEMS IN A MATCHINE
+#GET THE MAXCAPACITY AND NUMBER ITEMS IN A MATCHINE (STORE PROCEDURE)-HANDLE ERRORS
 def get_MaxCapacity_NumItems(machine_id):
   with Session() as session:
     try:
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       query = text(
           "SELECT VendingMachine.MaxCapacity, VendingMachine.NumItems FROM VendingMachine WHERE VendingMachine.ID=:machine_id;"
       )
@@ -267,7 +293,7 @@ def get_MaxCapacity_NumItems(machine_id):
       return -1
 
 
-#GET THE NUMBER OF PRODUCTS IN A MATCHINE
+#GET THE NUMBER OF PRODUCTS IN A MATCHINE (STORE PROCEDURE)-HANDLE ERRORS
 def get_product_id(product_name, store_name, machine_type):
   with Session() as session:
     query = text("""
@@ -290,9 +316,10 @@ def get_product_id(product_name, store_name, machine_type):
     else:
       return None
 
-#GET THE PRODUCT NUMBER IN A VENDING MACHINE
+#GET THE PRODUCT NUMBER IN A VENDING MACHINE (STORE PROCEDURE)-HANDLE ERRORS
 def get_product_number(product_name, store_name, machine_type):
   with Session() as session:
+    session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
     query = text("""
       SELECT Product.Quantity
       FROM Product  
@@ -315,10 +342,11 @@ def get_product_number(product_name, store_name, machine_type):
     else:
       return None
 
-
+# GET THE CUANTITY OF A PRODUCT KNOWING THE PRODUCT NAME (STORE PROCEDURE)-HANDLE ERRORS
 def get_quantity(product_name, machine_id):
   with Session() as session:
       try:
+          session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
           query = text(
               "SELECT Product.Quantity FROM Product WHERE Product.MachineID = :machine_id AND Product.NameProduct = :product_name;"
           )
@@ -336,28 +364,10 @@ def get_quantity(product_name, machine_id):
           return -1
 
 
-#use only for displaying data 
-def get_products(store_name,machine_type):
-  with Session.begin() as session:
-    
-      products_query = text("""
-          SELECT Product.NameProduct, Product.Price , Product.ExpirationDate 
-          FROM Product
-          JOIN VendingMachine ON VendingMachine.ID = Product.MachineID
-          WHERE VendingMachine.NameStore=:store_name AND VendingMachine.MachineType =:machine_type;
-      """)
-
-      result = session.execute(products_query, {"store_name": store_name, "machine_type": machine_type}).fetchall()
-      # Extract titles from the result
-      products = [row[0] for row in result]
-      price= [row[1] for row in result]
-      date= [row[2] for row in result]
-      return products,price,date
-
-
+#GET PRICE AND THE EXPIRATION DATE OF A PRODUCT- FOR EDITING A PRODUCT (STORE PROCEDURE)-HANDLE ERRORS
 def get_price_expiration(store_name,machine_type,product_name):
   with Session.begin() as session:
-
+      session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
       products_query = text("""
           SELECT Product.Price , Product.ExpirationDate 
           FROM Product
@@ -372,9 +382,9 @@ def get_price_expiration(store_name,machine_type,product_name):
       return price,date
 
 
-
-
-def call_vm_info(store_name, machine_type,vm_info): #PREPARE STATEMENT 
+#-----------------------------------------------------------------------------------------------------------
+#OBTAIN ALL THE INFORMATION OF VM BASED ON WHAT THE USER CHOSE (PREPARE STATEMENT)
+def call_vm_info(store_name, machine_type,vm_info): 
   with engine.begin() as conn:
 
     #3 options selected 
@@ -408,7 +418,7 @@ def call_vm_info(store_name, machine_type,vm_info): #PREPARE STATEMENT
 
     return info
 
-
+#OBTAIN ALL THE INFORMATION OF ABOUT A PRODUCT BASED ON WHAT THE USER CHOSE (PREPARE STATEMENT)
 def call_product_info(product_name, machine_type, product_info):
   with engine.begin() as conn:
       columns = []
@@ -450,8 +460,7 @@ def call_product_info(product_name, machine_type, product_info):
 
 
 
-
-
+  #OBTAIN ALL THE INFORMATION OF A STORE(PREPARE STATEMENT)
 def call_stores():
   with engine.begin() as conn:
      stmt = text("SELECT NameStore, City, Address, NumMachines FROM Store")
@@ -466,7 +475,7 @@ def call_stores():
      return stores,stores_availability
 
 
-
+#OBTAIN ALL THE INFORMATION OF A PRODUCT(PREPARE STATEMENT)
 def call_product():
   with engine.begin() as conn:
      stmt = text("SELECT DISTINCT(Product.NameProduct), ROUND(AVG(Product.Price),2),ROUND(AVG(Product.Quantity),2) FROM Product GROUP BY NameProduct")
@@ -474,7 +483,7 @@ def call_product():
      distinct_product = [{"Product Name": row[0], "Average Price": row[1],"Average Quantity": row[2]} for row in  distinct_product1]
      return distinct_product
 
-
+#OBTAIN ALL THE INFORMATION OF A VM(PREPARE STATEMENT)
 def call_vm():
   with engine.begin() as conn:
       stmt = text("""
@@ -498,7 +507,7 @@ def call_vm():
       ]
       return distinct_vm
 
-
+#OBTAIN ALL THE INFORMATION OF EMPLOYEES(PREPARE STATEMENT)
 def call_employees():
   with engine.begin() as conn:
       stmt = text("""
@@ -520,9 +529,11 @@ FROM Employees GROUP BY Employees.NameStore;
       ]
       return employees
 
+#GET THE MACHINES IN WHICH THE PROCUCT IS AVAILABLE (PREPARE STATEMENT)-HANDLE ERRORS
 def check_product(product_name): 
   with Session() as session:
     try:
+        session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
         query = text(
             "SELECT DISTINCT(VendingMachine.MachineType) FROM VendingMachine JOIN Product ON Product.MachineID = VendingMachine.ID WHERE Product.NameProduct=:product_name")
         result = session.execute(query, {"product_name": product_name})
@@ -537,10 +548,11 @@ def check_product(product_name):
         print("Error:", e)
         
         return -1
-
+#GET THE STRORES IN WHICH THE VENDING MACHINE IS AVAILABLE (PREPARE STATEMENT)-HANDLE ERRORS
 def check_store(): 
   with Session() as session:
     try:
+        session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
         query = text(
             "SELECT DISTINCT(NameStore) FROM Store")
         result = session.execute(query)
@@ -555,8 +567,3 @@ def check_store():
         print("Error:", e)
 
         return -1
-
-result = check_store()
-if 'Ametsa' in result:
-  print("Store found")
-   

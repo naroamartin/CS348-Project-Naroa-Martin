@@ -1,6 +1,6 @@
 from flask import Flask, render_template, request,jsonify
 
-from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity,get_products, get_price_expiration, call_vm_info,call_product_info,call_stores,call_product,call_vm,call_employees,check_product,check_store
+from database import upload_Vending_Machine, mod_store_vm_number, get_number_of_machines, get_machine_types,get_machine_id,get_product_types,upload_product,get_MaxCapacity_NumItems,mod_product_number, get_product_id,get_product_number,remove_product,delete_vending_machine, update_veding_machine, update_product,get_quantity, get_price_expiration, call_vm_info,call_product_info,call_stores,call_product,call_vm,call_employees,check_product,check_store
 
 
 
@@ -17,7 +17,7 @@ def add():
 
 
 
-
+#ADD VENDING MACHINE
 @app.route("/add_vm", methods=['POST'])
 def add_vm():
     machine_type = request.form['machine_type']
@@ -44,7 +44,7 @@ def add_vm():
 
 
 
-
+#ADD PRODUCT
 @app.route("/add_product", methods=['POST'])
 def add_product():
     machine_type = request.form['machine_type']
@@ -80,7 +80,7 @@ def add_product():
 
 
 
-
+#DELETE PRODUCT
 @app.route("/delete_product", methods=['POST'])
 def delete_product():
   
@@ -110,7 +110,7 @@ def delete_product():
       return render_template("delete_message3.html")
 
 
-
+#DELETE VENING MACHINE
 @app.route("/delete_machine", methods=['POST'])
 def delete_machine():
     machine_type = request.form['machine_type']
@@ -129,6 +129,7 @@ def delete_machine():
         return render_template("delete_message-VM2.html")
 
 
+#EDIT VENDING MACHINE
 @app.route("/edit_vm", methods=['POST'])
 def edit_vm():
     store_name = request.form['store_name']
@@ -163,10 +164,7 @@ def edit_vm():
       return render_template("edit_message3.html")
       
     
-
-
-
-
+#EDIT PRODUCT
 @app.route("/edit_product", methods=['POST'])
 def edit_product():
     store_name = request.form['store_name']
@@ -215,18 +213,7 @@ def edit_product():
       return render_template("edit_message_p4.html")
 
 
-
-@app.route("/show_products", methods=['POST'])
-def display_books():
-    store_name = request.form['store_name']
-    machine_type = request.form['machine_type']
-    products,price,date = get_products(store_name, machine_type)
-    # Assuming you have a display.html template where you want to show the results
-    return render_template("info.html", products=products,price=price,date=date)
-
-
-
-
+#REPORT OF VENING MACHINES
 @app.route("/reportvm", methods=['POST'])
 def reportvm():
   store_name = request.form['store_name']
@@ -285,10 +272,9 @@ def reportvm():
     
     return render_template("report_message4.html")
   
-  
 
 
-
+#REPORT PRODUCT 
 @app.route("/reportproduct", methods=['POST'])
 def reportproduct():
     product_name = request.form['product_name']
@@ -319,7 +305,7 @@ def reportproduct():
       
 
 
-
+#REPORT OF EVERYTHING
 @app.route("/report", methods=['POST'])
 def report():
     report = request.form.getlist('report')
@@ -352,10 +338,6 @@ def delete():
 @app.route('/edit')
 def edit():
       return render_template('edit.html')
-  
-@app.route('/info')
-def info():
-    return render_template('info.html')
   
 @app.route('/report_options')
 def report_options():
