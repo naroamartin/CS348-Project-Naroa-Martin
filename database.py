@@ -3,8 +3,6 @@ from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
 
-
-
 db_connection_string = "mysql+pymysql://naroamartin:ZsQzfMRSjCc9j5G08exZ@cs348db.cbq6mk20o7yu.us-east-2.rds.amazonaws.com:3306/cs348db?charset=utf8mb4"
 
 
@@ -22,7 +20,7 @@ engine = create_engine(
 Session = sessionmaker(bind=engine)
 
 #-----------------------------------------------------------------------------------------------------------
-#UPLOAD A NEW PRODUCT (STORE PROCEDURE)
+#UPLOAD A NEW PRODUCT (ORM)
 def upload_product(product_name, product_price, expiration_date,product_quantity, product_machineID):
   try:
     with Session() as session:
@@ -49,7 +47,7 @@ def upload_product(product_name, product_price, expiration_date,product_quantity
 
 
 
-#ADDING A NEW VENING MATCHINE IN THE DATABASE (STORE PROCEDURE)
+#ADDING A NEW VENING MATCHINE IN THE DATABASE (ORM)
 def upload_Vending_Machine(vm_type, vm_maxcapacity, vm_working, vm_numitems,
                            vm_namestore):
   try:
@@ -76,7 +74,7 @@ def upload_Vending_Machine(vm_type, vm_maxcapacity, vm_working, vm_numitems,
     return f"Error: {str(e)}"
 
 
-#REMOVE THE PRODUCT NUMBER IN A VENDING MACHINE (STORE PROCEDURE)
+#REMOVE THE PRODUCT NUMBER IN A VENDING MACHINE (ORM)
 def remove_product(product_id): # ORM
   with Session.begin() as session:
       session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
@@ -84,7 +82,7 @@ def remove_product(product_id): # ORM
       session.commit()
 
 
-#DELETE A VENDING MACHINE (STORE PROCEDURE)
+#DELETE A VENDING MACHINE (ORM)
 def delete_vending_machine(store_name,machine_type): # ORM
   with Session.begin() as session:
     session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
@@ -96,7 +94,7 @@ def delete_vending_machine(store_name,machine_type): # ORM
       session.execute(text("DELETE FROM VendingMachine WHERE VendingMachine.ID = :id"), {"id": machine_id})
       
 
-#UPDATE A VENDING MACHINE (STORE PROCEDURE)
+#UPDATE A VENDING MACHINE (ORM)
 def update_veding_machine(store_name, machine_type, max_capacity, working):
   with Session.begin() as session:
       # Prepare the SQL UPDATE statement
@@ -122,7 +120,7 @@ def update_veding_machine(store_name, machine_type, max_capacity, working):
 
 
 
-#UPDATE A PRODUCT FROM A VENDING MACHINE (STORE PROCEDURE)
+#UPDATE A PRODUCT FROM A VENDING MACHINE (ORM)
 def update_product(store_name, product_name, machine_type, price, expiration_date, quantity):
   with Session.begin() as session:
     session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
@@ -149,7 +147,7 @@ def update_product(store_name, product_name, machine_type, price, expiration_dat
     session.commit()
 
 
-#MODIFY NUMBER OF VM IN A STORE (STORE PROCEDURE)
+#MODIFY NUMBER OF VM IN A STORE (ORM)
 def mod_store_vm_number(num_items, store_name):
   with Session() as session:
     try:
@@ -168,7 +166,7 @@ def mod_store_vm_number(num_items, store_name):
       print("Error:", e)
 
 
-#MODIFY THE PRODUCT NUMBER IN A VENDING MACHINE (STORE PROCEDURE)
+#MODIFY THE PRODUCT NUMBER IN A VENDING MACHINE (ORM)
 def mod_product_number(num_items, machine_id):
   with Session() as session:
     try:
@@ -187,7 +185,7 @@ def mod_product_number(num_items, machine_id):
       print("Error:", e)
 
 
-#FOR GETTING A MACHINE ID (STORE PROCEDURE)-HANDLE ERRORS
+#FOR GETTING A MACHINE ID (ORM)-HANDLE ERRORS
 def get_machine_id(machine_type, store_name):
   with Session() as session:
     query = text("""
@@ -210,7 +208,7 @@ def get_machine_id(machine_type, store_name):
       return None
 
 
-#GETTING THE NUMBER OF MATCHINES IN A GIVEN STORE (STORE PROCEDURE)-HANDLE ERRORS
+#GETTING THE NUMBER OF MATCHINES IN A GIVEN STORE (ORM)-HANDLE ERRORS
 def get_number_of_machines(store_name):
   with Session() as session:
     try:
@@ -230,7 +228,7 @@ def get_number_of_machines(store_name):
       return None
 
 
-#GETTING THE MACHINE TYPES IN A GIVEN STORE (STORE PROCEDURE)-HANDLE ERRORS
+#GETTING THE MACHINE TYPES IN A GIVEN STORE (ORM)-HANDLE ERRORS
 def get_machine_types(store_name):
   with Session() as session:
     try:
@@ -248,7 +246,7 @@ def get_machine_types(store_name):
       print("Error:", e)
       return None
 
-#GETTING ALL PRODUCTS OF A CERTAIN MACHINE IN A STORE (STORE PROCEDURE)-HANDLE ERRORS
+#GETTING ALL PRODUCTS OF A CERTAIN MACHINE IN A STORE (ORM)-HANDLE ERRORS
 def get_product_types(store_name, machine_type):
   with Session() as session:
     try:
@@ -271,7 +269,7 @@ def get_product_types(store_name, machine_type):
       print("Error:", e)
       return None
 
-#GET THE MAXCAPACITY AND NUMBER ITEMS IN A MATCHINE (STORE PROCEDURE)-HANDLE ERRORS
+#GET THE MAXCAPACITY AND NUMBER ITEMS IN A MATCHINE (ORM)-HANDLE ERRORS
 def get_MaxCapacity_NumItems(machine_id):
   with Session() as session:
     try:
@@ -293,7 +291,7 @@ def get_MaxCapacity_NumItems(machine_id):
       return -1
 
 
-#GET THE NUMBER OF PRODUCTS IN A MATCHINE (STORE PROCEDURE)-HANDLE ERRORS
+#GET THE NUMBER OF PRODUCTS IN A MATCHINE (ORM)-HANDLE ERRORS
 def get_product_id(product_name, store_name, machine_type):
   with Session() as session:
     query = text("""
@@ -316,7 +314,7 @@ def get_product_id(product_name, store_name, machine_type):
     else:
       return None
 
-#GET THE PRODUCT NUMBER IN A VENDING MACHINE (STORE PROCEDURE)-HANDLE ERRORS
+#GET THE PRODUCT NUMBER IN A VENDING MACHINE (ORM)-HANDLE ERRORS
 def get_product_number(product_name, store_name, machine_type):
   with Session() as session:
     session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
@@ -342,7 +340,7 @@ def get_product_number(product_name, store_name, machine_type):
     else:
       return None
 
-# GET THE CUANTITY OF A PRODUCT KNOWING THE PRODUCT NAME (STORE PROCEDURE)-HANDLE ERRORS
+# GET THE CUANTITY OF A PRODUCT KNOWING THE PRODUCT NAME (ORM)-HANDLE ERRORS
 def get_quantity(product_name, machine_id):
   with Session() as session:
       try:
@@ -364,7 +362,7 @@ def get_quantity(product_name, machine_id):
           return -1
 
 
-#GET PRICE AND THE EXPIRATION DATE OF A PRODUCT- FOR EDITING A PRODUCT (STORE PROCEDURE)-HANDLE ERRORS
+#GET PRICE AND THE EXPIRATION DATE OF A PRODUCT- FOR EDITING A PRODUCT (ORM)-HANDLE ERRORS
 def get_price_expiration(store_name,machine_type,product_name):
   with Session.begin() as session:
       session.execute(text("SET TRANSACTION ISOLATION LEVEL SERIALIZABLE"))
@@ -372,7 +370,7 @@ def get_price_expiration(store_name,machine_type,product_name):
           SELECT Product.Price , Product.ExpirationDate 
           FROM Product
           JOIN VendingMachine ON VendingMachine.ID = Product.MachineID
-          WHERE VendingMachine.NameStore=:store_name AND VendingMachine.MachineType =:machine_type AND Product.NameProduct =:product_name;;
+          WHERE VendingMachine.NameStore=:store_name AND VendingMachine.MachineType =:machine_type AND Product.NameProduct =:product_name;
       """)
 
       result = session.execute(products_query, {"store_name": store_name, "machine_type": machine_type, "product_name": product_name}).fetchall()
